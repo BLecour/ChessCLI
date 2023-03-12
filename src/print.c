@@ -150,5 +150,5 @@ void printPiece (int num) {
 
 // default back to white at the end
   printf("\033[0;37m");
-
+  
 }

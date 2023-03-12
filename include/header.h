@@ -10,8 +10,8 @@ struct piece {
 
 struct pieceMove {
 
-  char current [2];
-  char destination [2];
+  char current [3];
+  char destination [3];
 
 };
 
@@ -35,8 +35,6 @@ int isQueenMoveValid (struct pieceMove, struct piece board[8][8], int colour);
 
 int isKingMoveValid (struct pieceMove, struct piece board[8][8], int colour);
 
-void doMove (struct pieceMove, struct piece board[8][8], int colour);
+void doMove (struct pieceMove, struct piece piece, struct piece board[8][8], int colour);
 
-int moveToPositionX (char coordinate [2]);
-
-int moveToPositionY (char coordinate [2]);
+void moveToCoordinates(struct pieceMove, int * currentPositionX, int * currentPositionY, int * destinationPositionX, int * destinationPositionY);

@@ -1,0 +1,7 @@
+add a check for if a piece is pinned and make it unable to move (and if king is going into check)
+
+add movement for:
+- rook
+- bishop 
+- queen (maybe somehow merge rook and bishop)
+- king
