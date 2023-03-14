@@ -1,6 +1,6 @@
 #include "../include/header.h"
 
-void printBoard (struct piece board[8][8]) {
+void printBoard (struct piece board[64]) {
 
   char boardLetter = 'a';
   int boardNum = 8;
@@ -15,7 +15,7 @@ void printBoard (struct piece board[8][8]) {
 
     for (int j = 0; j < 8; j++) {
 
-      printPiece(board[i][j].type);
+      printPiece(board[(i*8)+j].type);
 
     }
 
@@ -37,7 +37,7 @@ void printBoard (struct piece board[8][8]) {
 
 }
 
-void printBlackBoard (struct piece board[8][8]) {
+void printBlackBoard (struct piece board[64]) {
 
   char boardLetter = 'h';
   int boardNum = 1;
@@ -52,7 +52,7 @@ void printBlackBoard (struct piece board[8][8]) {
 
     for (int j = 7; j >= 0; j--) {
 
-      printPiece(board[i][j].type);
+      printPiece(board[(i*8)+j].type);
 
     }
 

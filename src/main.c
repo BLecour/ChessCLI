@@ -14,17 +14,17 @@ int main () {
 
   int colour;
 
-  piece board[8][8] = {
-//    a   b   c   d   e   f   g   h
-    {bR, bN, bB, bQ, bK, bB, bN, bR},                         // 8
-    {bP, bP, bP, bP, bP, bP, bP, bP},                         // 7
-    {blank, blank, blank, blank, blank, blank, blank, blank}, // 6
-    {blank, blank, blank, blank, blank, blank, blank, blank}, // 5
-    {blank, blank, blank, blank, blank, blank, blank, blank}, // 4
-    {blank, blank, blank, blank, blank, blank, blank, blank}, // 3
-    {wP, wP, wP, wP, wP, wP, wP, wP},                         // 2
-    {wR, wN, wB, wQ, wK, wB, wN, wR}                          // 1
- //   a   b   c   d   e   f   g   h 
+  piece board [64] = {
+//   a   b   c   d   e   f   g   h
+    bR, bN, bB, bQ, bK, bB, bN, bR,                         // 8
+    bP, bP, bP, bP, bP, bP, bP, bP,                         // 7
+    blank, blank, blank, blank, blank, blank, blank, blank, // 6
+    blank, blank, blank, blank, blank, blank, blank, blank, // 5
+    blank, blank, blank, blank, blank, blank, blank, blank, // 4
+    blank, blank, blank, blank, blank, blank, blank, blank, // 3
+    wP, wP, wP, wP, wP, wP, wP, wP,                         // 2
+    wR, wN, wB, wQ, wK, wB, wN, wR                          // 1
+ //  a   b   c   d   e   f   g   h 
   }; 
 
   typedef struct pieceMove pieceMove;
@@ -60,10 +60,10 @@ int main () {
 
     }
 
-    int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-    moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
+    int currentPosition, destinationPosition;
+    moveToCoordinates(move, &currentPosition, &destinationPosition);
   
-    piece currentPiece = board[currentPositionX][currentPositionY];
+    piece currentPiece = board[currentPosition];
 
     doMove(move, currentPiece, board, colour);
 

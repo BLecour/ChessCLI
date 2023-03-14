@@ -1,24 +1,40 @@
 #include "../include/header.h"
 
-int isMoveValid (struct pieceMove move, struct piece board[8][8], int colour) {
+int isMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
-  int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-  moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
+  int currentPosition, destinationPosition;
+  moveToCoordinates(move, &currentPosition, &destinationPosition);
 
 // if player is trying to move other player's pieces
-  if ((board[currentPositionX][currentPositionY].type > 0 && colour == 2) || (board[currentPositionX][currentPositionY].type < 0 && colour == 1)) {
+  if ((board[currentPosition].type > 0 && colour == 2) || (board[currentPosition].type < 0 && colour == 1)) {
+
+    printf("currentPosition (%d) or destinationPosition (%d) is trying to move other player's pieces\n", currentPosition, destinationPosition);
 
     return 0;
 
   }
 
-  if (currentPositionX > 8 || currentPositionX < 0 || currentPositionY > 8 || currentPositionY < 0 || destinationPositionX > 8 || destinationPositionX < 0 || destinationPositionY > 8 || destinationPositionY < 0) {
+// if move is out of bounds
+  if (currentPosition < 0 || destinationPosition < 0) {
+
+    printf("currentPosition (%d) or destinationPosition (%d) is out of bounds\n", currentPosition, destinationPosition);
 
     return 0;
 
   }
 
-  int currentType = board[currentPositionX][currentPositionY].type;
+// can't move to its current spot
+  if (strcmp(move.current, move.destination) == 0) {
+
+    printf("currentPosition (%d) or destinationPosition (%d) is trying to move to its current location\n", currentPosition, destinationPosition);
+
+    return 0;
+
+  }
+
+  int currentType = board[currentPosition].type;
+
+  printf("current type at %d is %d\n", currentPosition, board[currentPosition].type);
 
 // check if move is for a pawn
   if (currentType == 1 || currentType == -1) {
@@ -51,46 +67,38 @@ int isMoveValid (struct pieceMove move, struct piece board[8][8], int colour) {
 
 }
 
-int isPawnMoveValid (struct pieceMove move, struct piece board[8][8], int colour) {
+int isPawnMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
 // convert chars to integers to use on the 2D board array
-  int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-  moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
-  
-  int verticalDistance = abs(currentPositionX - destinationPositionX);
-  int horizontalDistance = abs(currentPositionY - destinationPositionY);
+  int currentPosition, destinationPosition;
+  moveToCoordinates(move, &currentPosition, &destinationPosition);
 
-  printf("row = %d column = %d\n", currentPositionX, currentPositionY);
+  int distance = currentPosition-destinationPosition;
 
-  printf("the type at this position is %d\n", board[currentPositionX][currentPositionY].type);
+  printf("currentPosition = %d  destinationPosition = %d\n", currentPosition, destinationPosition);
 
-  if ((board[currentPositionX][currentPositionY].type != 1 && colour == 1) || (board[currentPositionX][currentPositionY].type != -1 && colour == 2)) {
-// piece at current position is NOT a pawn, move is not valid
-    return 0;
+  printf("the type at this position is %d\n", board[currentPosition].type);
 
-  }
-
-   if (verticalDistance == 1 && horizontalDistance == 1 && board[destinationPositionX][destinationPositionY].type != 0) {
+// check if pawn can take another piece
+  if ((distance == 7 && board[destinationPosition].type < 0 && colour == 1) || (distance == 9 && board[destinationPosition].type < 0 && colour == 1) || (distance == -7 && board[destinationPosition].type > 0 && colour == 2) || (distance == -9 && board[destinationPosition].type > 0 && colour == 2)) {
 
     return 1;
 
   }
 
-  if (board[destinationPositionX][destinationPositionY].type != 0) {
+  if (board[destinationPosition].type != 0) {
 // if there is already a piece at the destination, move is not valid
 
     return 0;
 
   }
 
-  printf("Destination is at row = %d column = %d\n", destinationPositionX, destinationPositionY);
-
 // pawns can't move more than 2 spaces at once
-  if (verticalDistance > 2) {
+  if (distance != 8 && distance != 16) {
 
     return 0;
 
-  } else if (verticalDistance == 2 && board[currentPositionX][currentPositionY].moves != 0) {
+  } else if (abs(distance) == 16 && board[currentPosition].moves != 0) {
 // pawns can't move 2 spaces if they have already moved
       
     return 0;
@@ -98,52 +106,50 @@ int isPawnMoveValid (struct pieceMove move, struct piece board[8][8], int colour
   }
 
 // pawn cannot capture straight on/ or land capture his colour's pieces
-  if (verticalDistance == 1 && horizontalDistance == 0 && board[destinationPositionX][destinationPositionY].type != 0) {
+  if (abs(distance) == 8 && board[destinationPosition].type != 0) {
 
     return 0;
 
 // if moving 2 squares, pawn also cannot jump over pieces (for white)
-  } else if (verticalDistance == 2 && horizontalDistance == 0 && (board[currentPositionX-1][currentPositionY].type != 0 || board[destinationPositionX][destinationPositionY].type != 0) && colour == 1) {
+  } else if (abs(distance) == 16 && (board[currentPosition-8].type != 0 || board[currentPosition-16].type != 0) && colour == 1) {
 
     return 0;
 
 // if moving 2 squares, pawn also cannot jump over pieces (for black)
-  } else if (verticalDistance == 2 && horizontalDistance == 0 && (board[currentPositionX+1][currentPositionY].type != 0 || board[destinationPositionX][destinationPositionY].type != 0) && colour == 2) {
+  } else if (abs(distance) == 16 && (board[currentPosition+8].type != 0 || board[currentPosition+16].type != 0) && colour == 2) {
 
     return 0;
 
   }
 
-  printf("Pawn is at (%d,%d) and wants to check (%d,%d)\n", currentPositionX, currentPositionY, currentPositionX-1, currentPositionY);
-
   return 1;
 
 }
 
-int isRookMoveValid (struct pieceMove move, struct piece board[8][8], int colour) {
+int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
-  int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-  moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
+  int currentPosition, destinationPosition;
+  moveToCoordinates(move, &currentPosition, &destinationPosition);
 
-  if ((board[currentPositionX][currentPositionY].type != 2 && colour == 1) || (board[currentPositionX][currentPositionY].type != -2 && colour == 2)) {
-// piece at current position is NOT a rook, move is not valid
+// must be either moving horizontally or vertically, not both or neither (XOR)
+/*
+  if ((horizontalDistance != 0) == (verticalDistance != 0)) {
+
     return 0;
 
   }
+*/
 
-  
   return 1;
 
 }
 
-int isKnightMoveValid (struct pieceMove move, struct piece board[8][8], int colour) {
+int isKnightMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
-  int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-  moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
-  
-  int verticalDistance = abs(currentPositionX - destinationPositionX);
-  int horizontalDistance = abs(currentPositionY - destinationPositionY);
+  int currentPosition, destinationPosition;
+  moveToCoordinates(move, &currentPosition, &destinationPosition);
 
+/*
 // piece at current position is NOT a knight, move is not valid
   if ((board[currentPositionX][currentPositionY].type != 3 && colour == 1) || (board[currentPositionX][currentPositionY].type != -3 && colour == 2)) {
 
@@ -163,59 +169,41 @@ int isKnightMoveValid (struct pieceMove move, struct piece board[8][8], int colo
     return 0;
 
   }
+*/
+  return 1;
+
+}
+
+int isBishopMoveValid (struct pieceMove move, struct piece board[64], int colour) {
+
+  int currentPosition, destinationPosition;
+  moveToCoordinates(move, &currentPosition, &destinationPosition);
+
+  return 1;
+}
+
+int isQueenMoveValid (struct pieceMove move, struct piece board[64], int colour) {
+
+  int currentPosition, destinationPosition;
+  moveToCoordinates(move, &currentPosition, &destinationPosition);
 
   return 1;
 
 }
 
-int isBishopMoveValid (struct pieceMove move, struct piece board[8][8], int colour) {
+int isKingMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
-  int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-  moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
+  int currentPosition, destinationPosition;
+  moveToCoordinates(move, &currentPosition, &destinationPosition);
 
-  if ((board[currentPositionX][currentPositionY].type != 4 && colour == 1) || (board[currentPositionX][currentPositionY].type != -4 && colour == 2)) {
-// piece at current position is NOT a knight, move is not valid
-    return 0;
-
-  }
-  
-  return 1;
-}
-
-int isQueenMoveValid (struct pieceMove move, struct piece board[8][8], int colour) {
-
-  int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-  moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
-
-  if ((board[currentPositionX][currentPositionY].type != 5 && colour == 1) || (board[currentPositionX][currentPositionY].type != -5 && colour == 2)) {
-// piece at current position is NOT a queen, move is not valid
-    return 0;
-
-  }
-  
   return 1;
 
 }
 
-int isKingMoveValid (struct pieceMove move, struct piece board[8][8], int colour) {
+void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[64], int colour) {
 
-  int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-  moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
-
-  if ((board[currentPositionX][currentPositionY].type != 6 && colour == 1) || (board[currentPositionX][currentPositionY].type != -6 && colour == 2)) {
-// piece at current position is NOT a knight, move is not valid
-    return 0;
-
-  }
-  
-  return 1;
-
-}
-
-void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[8][8], int colour) {
-
-  int currentPositionX, currentPositionY, destinationPositionX, destinationPositionY;
-  moveToCoordinates(move, &currentPositionX, &currentPositionY, &destinationPositionX, &destinationPositionY);
+  int currentPosition, destinationPosition;
+  moveToCoordinates(move, &currentPosition, &destinationPosition);
   
 // create a null piece to signify empty space
   typedef struct piece piece;
@@ -224,169 +212,167 @@ void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[
 
   movedPiece.moves++;
 
-  board[currentPositionX][currentPositionY] = blank;
-  board[destinationPositionX][destinationPositionY] = movedPiece;
+  board[currentPosition] = blank;
+  board[destinationPosition] = movedPiece;
 
 }
 
-void moveToCoordinates (struct pieceMove move, int * currentPositionX, int * currentPositionY, int * destinationPositionX, int * destinationPositionY) {
+void moveToCoordinates (struct pieceMove move, int * currentPosition, int * destinationPosition) {
 
-    switch (move.current[0]) {
-
-    case 'a':
-      * currentPositionY = 0;
-      break;
-
-    case 'b':
-      * currentPositionY = 1;
-      break;
-
-    case 'c':
-      * currentPositionY = 2;
-      break;
-
-    case 'd':
-      * currentPositionY = 3;
-      break;
-
-    case 'e':
-      * currentPositionY = 4;
-      break;
-
-    case 'f':
-      * currentPositionY = 5;
-      break;
-
-    case 'g':
-      * currentPositionY = 6;
-      break;
-
-    case 'h':
-      * currentPositionY = 7;
-      break;
-
-    default:
-      * currentPositionY = -1;
-
-
-  }
-
-  switch (move.current[1]) {
+    switch (move.current[1]) {
 
     case '1':
-      * currentPositionX = 7;
+      * currentPosition = 56;
       break;
 
     case '2':
-      * currentPositionX = 6;
+      * currentPosition = 48;
       break;
 
     case '3':
-      * currentPositionX = 5;
+      * currentPosition = 40;
       break;
 
     case '4':
-      * currentPositionX = 4;
+      * currentPosition = 32;
       break;
 
     case '5':
-      * currentPositionX = 3;
+      * currentPosition = 24;
       break;
 
     case '6':
-      * currentPositionX = 2;
+      * currentPosition = 16;
       break;
 
     case '7':
-      * currentPositionX = 1;
+      * currentPosition = 8;
       break;
 
     case '8':
-      * currentPositionX = 0;
+      * currentPosition = 0;
       break;
 
     default:
-      * currentPositionX = -1;
+      * currentPosition = -1;
 
   }
 
-  switch (move.destination[0]) {
+      switch (move.current[0]) {
 
     case 'a':
-      * destinationPositionY = 0;
+      * currentPosition += 0;
       break;
 
     case 'b':
-      * destinationPositionY = 1;
+      * currentPosition += 1;
       break;
 
     case 'c':
-      * destinationPositionY = 2;
+      * currentPosition += 2;
       break;
 
     case 'd':
-      * destinationPositionY = 3;
+      * currentPosition += 3;
       break;
 
     case 'e':
-      * destinationPositionY = 4;
+      * currentPosition += 4;
       break;
 
     case 'f':
-      * destinationPositionY = 5;
+      * currentPosition += 5;
       break;
 
     case 'g':
-      * destinationPositionY = 6;
+      * currentPosition += 6;
       break;
 
     case 'h':
-      * destinationPositionY = 7;
+      * currentPosition += 7;
       break;
 
     default:
-      * destinationPositionY = -1;
+      * currentPosition = -1;
 
   }
 
-  switch (move.destination[1]) {
+
+    switch (move.destination[1]) {
 
     case '1':
-      * destinationPositionX = 7;
+      * destinationPosition = 56;
       break;
 
     case '2':
-      * destinationPositionX = 6;
+      * destinationPosition = 48;
       break;
 
     case '3':
-      * destinationPositionX = 5;
+      * destinationPosition = 40;
       break;
 
     case '4':
-      * destinationPositionX = 4;
+      * destinationPosition = 32;
       break;
 
     case '5':
-      * destinationPositionX = 3;
+      * destinationPosition = 24;
       break;
 
     case '6':
-      * destinationPositionX = 2;
+      * destinationPosition = 16;
       break;
 
     case '7':
-      * destinationPositionX = 1;
+      * destinationPosition = 8;
       break;
 
     case '8':
-      * destinationPositionX = 0;
+      * destinationPosition = 0;
       break;
 
     default:
-      * destinationPositionX = -1;
+      * destinationPosition = -1;
 
   }
 
+      switch (move.destination[0]) {
 
+    case 'a':
+      * destinationPosition += 0;
+      break;
+
+    case 'b':
+      * destinationPosition += 1;
+      break;
+
+    case 'c':
+      * destinationPosition += 2;
+      break;
+
+    case 'd':
+      * destinationPosition += 3;
+      break;
+
+    case 'e':
+      * destinationPosition += 4;
+      break;
+
+    case 'f':
+      * destinationPosition += 5;
+      break;
+
+    case 'g':
+      * destinationPosition += 6;
+      break;
+
+    case 'h':
+      * destinationPosition += 7;
+      break;
+
+    default:
+      * destinationPosition = -1;
+
+  }
 }
