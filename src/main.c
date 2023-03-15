@@ -45,13 +45,14 @@ int main () {
 
     }
 
+// if user enters more than 2 characters then it creates a memory error where it changes board[0].type
     printf("Enter the coordinates of the piece you want to move: ");
     scanf(" %s", move.current);
 
     printf("Enter where you want to move the piece: ");
     scanf(" %s", move.destination);
 
-    while (isMoveValid(move, board, colour) != 1) {
+    while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, colour) != 1)) {
 
       printf("Not a valid move. Enter the coordinates of the piece you want to move: ");
       scanf(" %s", move.current);

@@ -76,7 +76,7 @@ void printBlackBoard (struct piece board[64]) {
 
 void printPiece (int num) {
 
-  if (num > 0) {
+  if (num > 0 && num < 7) {
 
     printf("\033[0;34m"); // blue
 
@@ -108,7 +108,7 @@ void printPiece (int num) {
 
     }
 
-  } else if (num < 0) {
+  } else if (num < 0 && num > -7) {
 
     printf("\033[0;31m"); // red
 
@@ -140,11 +140,16 @@ void printPiece (int num) {
 
     }
 
-  } else {
+  } else if (num == 0) {
 
     printf("\033[0;37m"); // white
 
     printf(". ");
+
+  } else {
+
+    printf("Error occured: Piece type (%d) not recognized\n\n", num);
+    exit(0);
 
   }
 

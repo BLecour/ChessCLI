@@ -11,8 +11,8 @@ struct piece {
 
 struct pieceMove {
 
-  char current [3];
-  char destination [3];
+  char current [5];
+  char destination [5];
 
 };
 

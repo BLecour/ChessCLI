@@ -32,9 +32,18 @@ int isMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   }
 
+// can't capture own colour's pieces
+  if ((board[destinationPosition].type > 0 && colour == 1) || (board[destinationPosition].type < 0 && colour == 2)) {
+
+    printf("currentPosition (%d) or destinationPosition (%d) trying to capture its own pieces\n", currentPosition, destinationPosition);
+
+    return 0;
+
+  }
+
   int currentType = board[currentPosition].type;
 
-  printf("current type at %d is %d\n", currentPosition, board[currentPosition].type);
+  // printf("current type at %d is %d\n", currentPosition, board[currentPosition].type);
 
 // check if move is for a pawn
   if (currentType == 1 || currentType == -1) {
@@ -73,14 +82,14 @@ int isPawnMoveValid (struct pieceMove move, struct piece board[64], int colour) 
   int currentPosition, destinationPosition;
   moveToCoordinates(move, &currentPosition, &destinationPosition);
 
-  int distance = currentPosition-destinationPosition;
+  int distance = destinationPosition-currentPosition;
 
   printf("currentPosition = %d  destinationPosition = %d\n", currentPosition, destinationPosition);
 
   printf("the type at this position is %d\n", board[currentPosition].type);
 
 // check if pawn can take another piece
-  if ((distance == 7 && board[destinationPosition].type < 0 && colour == 1) || (distance == 9 && board[destinationPosition].type < 0 && colour == 1) || (distance == -7 && board[destinationPosition].type > 0 && colour == 2) || (distance == -9 && board[destinationPosition].type > 0 && colour == 2)) {
+  if ((distance == -7 && board[destinationPosition].type < 0 && colour == 1) || (distance == -9 && board[destinationPosition].type < 0 && colour == 1) || (distance == 7 && board[destinationPosition].type > 0 && colour == 2) || (distance == 9 && board[destinationPosition].type > 0 && colour == 2)) {
 
     return 1;
 
@@ -94,7 +103,7 @@ int isPawnMoveValid (struct pieceMove move, struct piece board[64], int colour) 
   }
 
 // pawns can't move more than 2 spaces at once
-  if (distance != 8 && distance != 16) {
+  if (abs(distance) != 8 && abs(distance) != 16) {
 
     return 0;
 
@@ -105,13 +114,8 @@ int isPawnMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
   }
 
-// pawn cannot capture straight on/ or land capture his colour's pieces
-  if (abs(distance) == 8 && board[destinationPosition].type != 0) {
-
-    return 0;
-
 // if moving 2 squares, pawn also cannot jump over pieces (for white)
-  } else if (abs(distance) == 16 && (board[currentPosition-8].type != 0 || board[currentPosition-16].type != 0) && colour == 1) {
+  if (abs(distance) == 16 && (board[currentPosition-8].type != 0 || board[currentPosition-16].type != 0) && colour == 1) {
 
     return 0;
 
@@ -131,16 +135,107 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) 
   int currentPosition, destinationPosition;
   moveToCoordinates(move, &currentPosition, &destinationPosition);
 
-// must be either moving horizontally or vertically, not both or neither (XOR)
-/*
-  if ((horizontalDistance != 0) == (verticalDistance != 0)) {
+  int distance = destinationPosition-currentPosition;
+
+// check if rook is moving vertically (first conditional) or horizontally (second)
+  if (abs(distance) % 8 != 0 && (move.current[1] != move.destination[1])) {
+
+    printf("not a valid rook move because of non-vertical/horizontal move\n");
 
     return 0;
 
   }
-*/
 
-  return 1;
+  if (abs(distance) % 8 == 0 && (move.current[1] == move.destination[1])) {
+
+    printf("not a valid rook move because of it is not moving fully vertically/horizontally\n");
+
+    return 0;
+
+  }
+
+// check if any pieces are in the way of horizontal move
+  if (move.current[1] == move.destination[1]) {
+
+    if (distance > 0) {
+
+// iterate through all squares inbetween pieces
+      for (int i = currentPosition+1; i < destinationPosition; i++) {
+
+        if (board[i].type != 0) {
+
+          printf("there is a piece in the way of a horizontal rook move at %d\n", i);
+
+          return 0;
+
+        }
+
+      }
+
+      return 1;
+
+    } else {
+
+// iterate through all squares inbetween pieces
+      for (int i = destinationPosition-1; i > currentPosition; i--) {
+
+        if (board[i].type != 0) {
+
+          printf("there is a piece in the way of a horizontal rook move at %d\n", i);
+
+          return 0;
+
+        }
+
+      }
+
+      return 1;
+
+    }
+
+  }
+
+// check if any pieces are in the way of vertical move
+  if (abs(distance) % 8 == 0) {
+
+    if (distance > 0) {
+
+      for (int i = currentPosition+8; i < destinationPosition; i += 8) {
+
+        if (board[i].type != 0) {
+
+          printf("there is a piece in the way of a vertical rook move at %d\n", i);
+
+          return 0;
+
+        }
+
+      }
+
+      return 1;
+      
+    } else {
+
+      for (int i = currentPosition-8; i > destinationPosition; i -= 8) {
+
+        if (board[i].type != 0) {
+
+          printf("there is a piece in the way of a vertical rook move at %d\n", i);
+
+          return 0;
+
+        }
+
+      }
+
+      return 1;
+      
+    }
+
+  }
+
+  printf("Rook move failed at the end of function\n");
+  return 0;
 
 }
 
@@ -149,27 +244,17 @@ int isKnightMoveValid (struct pieceMove move, struct piece board[64], int colour
   int currentPosition, destinationPosition;
   moveToCoordinates(move, &currentPosition, &destinationPosition);
 
-/*
-// piece at current position is NOT a knight, move is not valid
-  if ((board[currentPositionX][currentPositionY].type != 3 && colour == 1) || (board[currentPositionX][currentPositionY].type != -3 && colour == 2)) {
+  int distance = destinationPosition-currentPosition;
+
+// check that knight move is an L shape
+  if (abs(distance) != 6 && abs(distance) != 10 && abs(distance) != 15 && abs(distance) != 17) {
+
+    printf("knight move failed because it is not an L shaped move (distance = %d)\n", distance);
 
     return 0;
 
   }
 
-// if move is not an L shape, move is not valid
-  if (!((horizontalDistance == 2 && verticalDistance == 1) || (horizontalDistance == 1 && verticalDistance == 2))) {
-
-    return 0;
-
-  }
-
-  if ((board[destinationPositionX][destinationPositionY].type > 0 && colour == 1) ||  (board[destinationPositionX][destinationPositionY].type < 0 && colour == 2)) {
-
-    return 0;
-
-  }
-*/
   return 1;
 
 }
@@ -179,13 +264,118 @@ int isBishopMoveValid (struct pieceMove move, struct piece board[64], int colour
   int currentPosition, destinationPosition;
   moveToCoordinates(move, &currentPosition, &destinationPosition);
 
-  return 1;
+  int distance = destinationPosition-currentPosition;
+
+// check if bishop move is diagonal
+  if (abs(distance) % 7 != 0 && abs(distance) % 9 != 0) {
+
+    printf("bishop move failed because it is not a diagonal move\n");
+
+    return 0;
+
+  }
+
+  printf("bishop distance = %d\n", distance);
+
+// bishop is moving towards bottom right
+  if (distance % 9 == 0 && distance > 0) {
+
+    for (int i = currentPosition+9; i < destinationPosition; i+=9) {
+
+      if (board[i].type != 0) {
+
+        printf("there is a piece in the way of a bottom right bishop move at %d\n", i);
+
+        return 0;
+
+      }
+
+    }
+
+    return 1;
+
+// bishop is moving towards bottom left
+  } else if (distance % 7 == 0 && distance > 0) {
+
+    for (int i = currentPosition+7; i < destinationPosition; i+=7) {
+
+      if (board[i].type != 0) {
+
+        printf("there is a piece in the way of a bottom left bishop move at %d\n", i);
+
+        return 0;
+
+      }
+
+    }
+
+    return 1;
+
+// bishop is moving towards top left
+  } else if (distance % 9 == 0 && distance < 0) {
+
+    for (int i = currentPosition-9; i > destinationPosition; i-=9) {
+
+      printf("checking square [%d] and type at %d is %d\n", i, i, board[i].type);
+
+      if (board[i].type != 0) {
+
+        printf("there is a piece in the way of a top right bishop move at %d\n", i);
+
+        return 0;
+
+      }
+
+    }
+
+    return 1;
+
+// bishop is moving towards top right
+  } else if (distance % 7 == 0 && distance < 0) {
+
+    for (int i = currentPosition-7; i > destinationPosition; i-=7) {
+
+      printf("checking square [%d] and type at %d is %d\n", i, i, board[i].type);
+
+      if (board[i].type != 0) {
+
+        printf("there is a piece in the way of a top left bishop move at %d\n", i);
+
+        return 0;
+
+      }
+
+    }
+
+    return 1;
+
+  }
+
+  printf("bishop failed at end of function\n");
+
+  return 0;
 }
 
 int isQueenMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   int currentPosition, destinationPosition;
   moveToCoordinates(move, &currentPosition, &destinationPosition);
+
+// check if queen move works for rooks and bishops
+  int rookLegal = isRookMoveValid(move, board, colour);
+  int bishopLegal = isBishopMoveValid(move, board, colour);
+
+// if it fails both the rook and bishop test, it is not a legal queen move
+  if (rookLegal == 0 && bishopLegal == 0) {
+
+    printf("rookLegal = %d and bishopLegal = %d, failed both\n", rookLegal, bishopLegal);
+
+    return 0;
+
+  }
+
+// if it passes either the rook or bishop test, it is a legal queen move
+  printf("rookLegal = %d and bishopLegal = %d, passed!\n", rookLegal, bishopLegal);
 
   return 1;
 
