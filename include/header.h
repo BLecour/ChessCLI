@@ -38,4 +38,6 @@ int isKingMoveValid (struct pieceMove, struct piece board[64], int colour);
 
 void doMove (struct pieceMove, struct piece piece, struct piece board[64], int colour);
 
+void movesUnderCheck(struct piece board[64], int invalidKingMoves[64], int colour);
+
 void moveToCoordinates(struct pieceMove, int * currentPosition, int * destinationPosition);

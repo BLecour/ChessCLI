@@ -5,6 +5,20 @@ int isMoveValid (struct pieceMove move, struct piece board[64], int colour) {
   int currentPosition, destinationPosition;
   moveToCoordinates(move, &currentPosition, &destinationPosition);
 
+
+//test king invalid moves
+  int badMoves[64] = {-64};
+
+  movesUnderCheck(board, badMoves, colour);
+
+  printf("invalid king moves at squares: ");
+
+  for (int i = 0; i < 64; i++) {
+
+    printf("%d ", badMoves[i]);
+
+  }
+
 // if player is trying to move other player's pieces
   if ((board[currentPosition].type > 0 && colour == 2) || (board[currentPosition].type < 0 && colour == 1)) {
 
@@ -246,6 +260,9 @@ int isKnightMoveValid (struct pieceMove move, struct piece board[64], int colour
 
   int distance = destinationPosition-currentPosition;
 
+  int rowDifference = abs((destinationPosition / 8) - (currentPosition / 8));
+  int columnDifference = abs((destinationPosition % 8) - (currentPosition % 8));
+
 // check that knight move is an L shape
   if (abs(distance) != 6 && abs(distance) != 10 && abs(distance) != 15 && abs(distance) != 17) {
 
@@ -255,7 +272,14 @@ int isKnightMoveValid (struct pieceMove move, struct piece board[64], int colour
 
   }
 
-  return 1;
+  if ((rowDifference == 1 && columnDifference == 2) || (rowDifference == 2 && columnDifference == 1)) {
+
+    return 1;
+
+  }
+
+  printf("Invalid move: target square is not reachable by a knight's move. OR ANOTHER ERROR\n");
+  return 0;
 
 }
 
@@ -386,6 +410,26 @@ int isKingMoveValid (struct pieceMove move, struct piece board[64], int colour) 
   int currentPosition, destinationPosition;
   moveToCoordinates(move, &currentPosition, &destinationPosition);
 
+  int distance = destinationPosition-currentPosition;
+
+  if (abs(distance) != 1 && abs(distance) != 7 && abs(distance) != 8 && abs(distance) != 9) {
+
+    printf("FAILED: king move is not within 1 square of king\n");
+
+    return 0;
+
+  }
+
+  if (abs(distance) == 1 && move.current[1] != move.destination[1]) {
+
+    printf("FAILED: king move is horizontal but is trying to jump rows\n");
+
+    return 0;
+
+  }
+
+  printf("king move PASSED at the end of function\n");
+
   return 1;
 
 }
@@ -404,6 +448,188 @@ void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[
 
   board[currentPosition] = blank;
   board[destinationPosition] = movedPiece;
+
+}
+
+void movesUnderCheck(struct piece board[64], int invalidKingMoves[64], int colour) {
+
+  typedef struct piece piece;
+  int numOfMoves = 0;
+
+// if white
+  if (colour == 1) {
+
+    for (int square = 0; square < 64; square++) {
+
+      piece currentPiece = board[square];
+
+// pawns
+      if (currentPiece.type == 1) {
+
+        int pawnMoveOffsets [4] = {-9, -7, -17, -15};
+        int currentOffset;
+
+        int rowDifference, columnDifference;
+
+// if pawn can move 1 or 2 squares
+        if (currentPiece.moves == 0) {
+
+          for (int i = 0; i < 4; i++) {
+
+            currentOffset = pawnMoveOffsets[i];
+
+            rowDifference = abs(((square+currentOffset) / 8) - (square / 8));
+            columnDifference = abs(((square+currentOffset) % 8) - (square % 8));
+
+            if ((rowDifference == 1 && columnDifference == 1) || (rowDifference == 2 && columnDifference == 1)) {
+
+              invalidKingMoves[numOfMoves] = square+currentOffset;
+              numOfMoves++;
+
+            }
+        
+          }
+
+// if pawn can only move 1 square
+        } else {
+
+          for (int i = 0; i < 2; i++) {
+
+            currentOffset = pawnMoveOffsets[i];
+
+            rowDifference = abs(((square+currentOffset) / 8) - (square / 8));
+            columnDifference = abs(((square+currentOffset) % 8) - (square % 8));
+
+            if ((rowDifference == 1 && columnDifference == 1)) {
+
+              invalidKingMoves[numOfMoves] = square+currentOffset;
+              numOfMoves++;
+
+            }
+        
+          }
+
+        }
+
+// rook
+      } else if (currentPiece.type == 2) {
+
+// iterate through all squares to the right of the rook
+        for (int i = square+1; i < (square/8)*8 + 7; i++) {
+
+          if (board[square].type != 0) {
+
+            printf("there is a piece in the way of a horizontal (right) rook move at %d\n", i);
+
+            break;
+
+          } else {
+
+            invalidKingMoves[numOfMoves] = i;
+            numOfMoves++;
+
+          }
+
+        }
+
+// iterate through all squares to the left of the rook
+        for (int i = square-1; i > (square/8)*8; i--) {
+
+          if (board[square].type != 0) {
+
+            printf("there is a piece in the way of a horizontal (left) rook move at %d\n", i);
+
+            break;
+
+          } else {
+
+            invalidKingMoves[numOfMoves] = i;
+            numOfMoves++;
+
+          }
+
+        }
+
+        for (int i = square+8; i > (square%8)+56; i+=8) {
+
+          if (board[square].type != 0) {
+
+            printf("there is a piece in the way of a vertical (down) rook move at %d\n", i);
+
+            break;
+
+          } else {
+
+            invalidKingMoves[numOfMoves] = i;
+            numOfMoves++;
+
+          }
+
+        }
+
+        for (int i = square-8; i > square%8; i-=8) {
+
+          if (board[square].type != 0) {
+
+            printf("there is a piece in the way of a vertical (up) rook move at %d\n", i);
+
+            break;
+
+          } else {
+
+            invalidKingMoves[numOfMoves] = i;
+            numOfMoves++;
+
+          }
+
+        }
+      
+// knight
+      } else if (currentPiece.type == 3) {
+
+        int knightMoveOffsets [8] = {-17, -15, -10, -6, 6, 10, 15, 17};
+        int currentOffset;
+
+        int rowDifference, columnDifference;
+
+        for (int i = 0; i < 8; i++) {
+
+          currentOffset = knightMoveOffsets[i];
+
+// knight move would be out of board bounds, go to next iteration
+          if (square + currentOffset < 0 || square + currentOffset > 63) {
+
+            continue;
+
+          }
+
+          rowDifference = abs(((square+currentOffset) / 8) - (square / 8));
+          columnDifference = abs(((square+currentOffset) % 8) - (square % 8));
+
+          if ((rowDifference == 1 && columnDifference == 2) || (rowDifference == 2 && columnDifference == 1)) {
+
+            invalidKingMoves[numOfMoves] = square+currentOffset;
+            numOfMoves++;
+
+          }
+
+        }
+
+      }
+
+    }
+
+
+// if black
+  } else {
+
+    for (int i = 0; i < 64; i++) {
+
+      piece currentPiece = board[i];
+
+    }
+
+  }
 
 }
 
