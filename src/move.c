@@ -3,21 +3,52 @@
 int isMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   int currentPosition, destinationPosition;
-  moveToCoordinates(move, &currentPosition, &destinationPosition);
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
-
-//test king invalid moves
-  int badMoves[64] = {-64};
-
-  movesUnderCheck(board, badMoves, colour);
-
-  printf("invalid king moves at squares: ");
-
-  for (int i = 0; i < 64; i++) {
-
-    printf("%d ", badMoves[i]);
+// perform general checks to see if move is valid
+  if (isAnyMoveValid(move, board, colour) == 0) {
+    
+    return 0;
 
   }
+
+  int currentType = board[currentPosition].type;
+
+// check if move is for a pawn
+  if (currentType == 1 || currentType == -1) {
+
+    return isPawnMoveValid(move, board, colour);
+
+  } else if (currentType == 2 || currentType == -2) {
+
+    return isRookMoveValid(move, board, colour);
+
+  } else if (currentType == 3 || currentType == -3) {
+
+    return isKnightMoveValid(move, board, colour);
+
+  } else if (currentType == 4 || currentType == -4) {
+
+    return isBishopMoveValid(move, board, colour);
+
+  } else if (currentType == 5 || currentType == -5) {
+
+    return isQueenMoveValid(move, board, colour);
+
+  } else if (currentType == 6 || currentType == -6) {
+
+    return isKingMoveValid(move, board, colour);
+
+  }
+
+  return 0;
+
+}
+
+int isAnyMoveValid (struct pieceMove move, struct piece board[64], int colour) {
+
+  int currentPosition, destinationPosition;
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
 // if player is trying to move other player's pieces
   if ((board[currentPosition].type > 0 && colour == 2) || (board[currentPosition].type < 0 && colour == 1)) {
@@ -55,62 +86,53 @@ int isMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   }
 
-  int currentType = board[currentPosition].type;
-
-  // printf("current type at %d is %d\n", currentPosition, board[currentPosition].type);
-
-// check if move is for a pawn
-  if (currentType == 1 || currentType == -1) {
-
-    return isPawnMoveValid(move, board, colour);
-
-  } else if (currentType == 2 || currentType == -2) {
-
-    return isRookMoveValid(move, board, colour);
-
-  } else if (currentType == 3 || currentType == -3) {
-
-    return isKnightMoveValid(move, board, colour);
-
-  } else if (currentType == 4 || currentType == -4) {
-
-    return isBishopMoveValid(move, board, colour);
-
-  } else if (currentType == 5 || currentType == -5) {
-
-    return isQueenMoveValid(move, board, colour);
-
-  } else if (currentType == 6 || currentType == -6) {
-
-    return isKingMoveValid(move, board, colour);
-
-  }
-
-  return 0;
+  return 1;
 
 }
 
 int isPawnMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
 // convert chars to integers to use on the 2D board array
-  int currentPosition, destinationPosition;
-  moveToCoordinates(move, &currentPosition, &destinationPosition);
+  int currentPosition, destinationPosition, rowDifference, columnDifference;
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
   int distance = destinationPosition-currentPosition;
 
   printf("currentPosition = %d  destinationPosition = %d\n", currentPosition, destinationPosition);
 
-  printf("the type at this position is %d\n", board[currentPosition].type);
+// perform general checks to see if move is valid
+  if (isAnyMoveValid(move, board, colour) == 0) {
+    
+    return 0;
+
+  }
+
+// pawns can't move backwards
+  if ((distance < 0 && colour == 2) || (distance > 0 && colour == 1)) {
+
+    return 0;
+
+  }
 
 // check if pawn can take another piece
   if ((distance == -7 && board[destinationPosition].type < 0 && colour == 1) || (distance == -9 && board[destinationPosition].type < 0 && colour == 1) || (distance == 7 && board[destinationPosition].type > 0 && colour == 2) || (distance == 9 && board[destinationPosition].type > 0 && colour == 2)) {
 
-    return 1;
+    rowDifference = abs(((currentPosition) / 8) - (destinationPosition / 8));
+    columnDifference = abs(((currentPosition) % 8) - (destinationPosition % 8));
+
+// make sure that pawn isn't moving across the board
+    if (rowDifference == 1 && columnDifference == 1) {
+
+      return 1;
+
+    }
+
+    return 0;
 
   }
 
-  if (board[destinationPosition].type != 0) {
 // if there is already a piece at the destination, move is not valid
+  if (board[destinationPosition].type != 0) {
 
     return 0;
 
@@ -121,8 +143,8 @@ int isPawnMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
     return 0;
 
-  } else if (abs(distance) == 16 && board[currentPosition].moves != 0) {
 // pawns can't move 2 spaces if they have already moved
+  } else if (abs(distance) == 16 && board[currentPosition].moves != 0) {
       
     return 0;
 
@@ -147,14 +169,21 @@ int isPawnMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   int currentPosition, destinationPosition;
-  moveToCoordinates(move, &currentPosition, &destinationPosition);
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
   int distance = destinationPosition-currentPosition;
+
+// perform general checks to see if move is valid
+  if (isAnyMoveValid(move, board, colour) == 0) {
+    
+    return 0;
+
+  }
 
 // check if rook is moving vertically (first conditional) or horizontally (second)
   if (abs(distance) % 8 != 0 && (move.current[1] != move.destination[1])) {
 
-    printf("not a valid rook move because of non-vertical/horizontal move\n");
+//    printf("not a valid rook move because of non-vertical/horizontal move\n");
 
     return 0;
 
@@ -162,7 +191,7 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
   if (abs(distance) % 8 == 0 && (move.current[1] == move.destination[1])) {
 
-    printf("not a valid rook move because of it is not moving fully vertically/horizontally\n");
+//    printf("not a valid rook move because of it is not moving fully vertically/horizontally\n");
 
     return 0;
 
@@ -178,7 +207,7 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
         if (board[i].type != 0) {
 
-          printf("there is a piece in the way of a horizontal rook move at %d\n", i);
+//          printf("there is a piece in the way of a horizontal rook move at %d\n", i);
 
           return 0;
 
@@ -195,7 +224,7 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
         if (board[i].type != 0) {
 
-          printf("there is a piece in the way of a horizontal rook move at %d\n", i);
+//          printf("there is a piece in the way of a horizontal rook move at %d\n", i);
 
           return 0;
 
@@ -218,7 +247,7 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
         if (board[i].type != 0) {
 
-          printf("there is a piece in the way of a vertical rook move at %d\n", i);
+//          printf("there is a piece in the way of a vertical rook move at %d\n", i);
 
           return 0;
 
@@ -234,7 +263,7 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
         if (board[i].type != 0) {
 
-          printf("there is a piece in the way of a vertical rook move at %d\n", i);
+//          printf("there is a piece in the way of a vertical rook move at %d\n", i);
 
           return 0;
 
@@ -248,7 +277,7 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
   }
 
-  printf("Rook move failed at the end of function\n");
+//  printf("Rook move failed at the end of function\n");
   return 0;
 
 }
@@ -256,12 +285,19 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 int isKnightMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   int currentPosition, destinationPosition;
-  moveToCoordinates(move, &currentPosition, &destinationPosition);
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
   int distance = destinationPosition-currentPosition;
 
   int rowDifference = abs((destinationPosition / 8) - (currentPosition / 8));
   int columnDifference = abs((destinationPosition % 8) - (currentPosition % 8));
+
+// perform general checks to see if move is valid
+  if (isAnyMoveValid(move, board, colour) == 0) {
+    
+    return 0;
+
+  }
 
 // check that knight move is an L shape
   if (abs(distance) != 6 && abs(distance) != 10 && abs(distance) != 15 && abs(distance) != 17) {
@@ -286,20 +322,34 @@ int isKnightMoveValid (struct pieceMove move, struct piece board[64], int colour
 int isBishopMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   int currentPosition, destinationPosition;
-  moveToCoordinates(move, &currentPosition, &destinationPosition);
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
   int distance = destinationPosition-currentPosition;
+
+// perform general checks to see if move is valid
+  if (isAnyMoveValid(move, board, colour) == 0) {
+    
+    return 0;
+
+  }
 
 // check if bishop move is diagonal
   if (abs(distance) % 7 != 0 && abs(distance) % 9 != 0) {
 
-    printf("bishop move failed because it is not a diagonal move\n");
+    printf("bishop move failed because it is not a diagonal move (currentPos = %d and destinationPos = %d)\n", currentPosition, destinationPosition);
 
     return 0;
 
   }
 
-  printf("bishop distance = %d\n", distance);
+// check if bishop move crosses the side of the board
+  if (abs((destinationPosition/8)-(currentPosition/8)) != abs((destinationPosition%8)-(currentPosition%8))) {
+
+    printf("bishop move failed because it crosses the side of the board (currentPos = %d and destinationPos = %d)\n", currentPosition, destinationPosition);
+
+    return 0;
+
+  }
 
 // bishop is moving towards bottom right
   if (distance % 9 == 0 && distance > 0) {
@@ -383,7 +433,7 @@ int isBishopMoveValid (struct pieceMove move, struct piece board[64], int colour
 int isQueenMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   int currentPosition, destinationPosition;
-  moveToCoordinates(move, &currentPosition, &destinationPosition);
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
 // check if queen move works for rooks and bishops
   int rookLegal = isRookMoveValid(move, board, colour);
@@ -408,9 +458,16 @@ int isQueenMoveValid (struct pieceMove move, struct piece board[64], int colour)
 int isKingMoveValid (struct pieceMove move, struct piece board[64], int colour) {
 
   int currentPosition, destinationPosition;
-  moveToCoordinates(move, &currentPosition, &destinationPosition);
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
   int distance = destinationPosition-currentPosition;
+
+// perform general checks to see if move is valid
+  if (isAnyMoveValid(move, board, colour) == 0) {
+    
+    return 0;
+
+  }
 
   if (abs(distance) != 1 && abs(distance) != 7 && abs(distance) != 8 && abs(distance) != 9) {
 
@@ -437,7 +494,7 @@ int isKingMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[64], int colour) {
 
   int currentPosition, destinationPosition;
-  moveToCoordinates(move, &currentPosition, &destinationPosition);
+  moveToSquare(move, &currentPosition, &destinationPosition);
   
 // create a null piece to signify empty space
   typedef struct piece piece;
@@ -451,181 +508,29 @@ void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[
 
 }
 
-void movesUnderCheck(struct piece board[64], int invalidKingMoves[64], int colour) {
+void returnPawnMoves(struct pieceMove move, struct piece board[64], int pawnMoves[64], int colour) {
 
-  typedef struct piece piece;
   int numOfMoves = 0;
 
-// if white
-  if (colour == 1) {
+  int currentPosition, destinationPosition;
+  moveToSquare(move, &currentPosition, &destinationPosition);
 
-    for (int square = 0; square < 64; square++) {
+  typedef struct pieceMove pieceMove;
+  pieceMove tempMove;
+  char coordinate [5];
 
-      piece currentPiece = board[square];
+  strcpy(tempMove.current, move.current);
 
-// pawns
-      if (currentPiece.type == 1) {
+  for (int i = 0; i < 64; i++) {
 
-        int pawnMoveOffsets [4] = {-9, -7, -17, -15};
-        int currentOffset;
+    squareToMove(i, coordinate);
 
-        int rowDifference, columnDifference;
+    strcpy(tempMove.destination, coordinate);
 
-// if pawn can move 1 or 2 squares
-        if (currentPiece.moves == 0) {
+    if (isPawnMoveValid(tempMove, board, colour) == 1) {
 
-          for (int i = 0; i < 4; i++) {
-
-            currentOffset = pawnMoveOffsets[i];
-
-            rowDifference = abs(((square+currentOffset) / 8) - (square / 8));
-            columnDifference = abs(((square+currentOffset) % 8) - (square % 8));
-
-            if ((rowDifference == 1 && columnDifference == 1) || (rowDifference == 2 && columnDifference == 1)) {
-
-              invalidKingMoves[numOfMoves] = square+currentOffset;
-              numOfMoves++;
-
-            }
-        
-          }
-
-// if pawn can only move 1 square
-        } else {
-
-          for (int i = 0; i < 2; i++) {
-
-            currentOffset = pawnMoveOffsets[i];
-
-            rowDifference = abs(((square+currentOffset) / 8) - (square / 8));
-            columnDifference = abs(((square+currentOffset) % 8) - (square % 8));
-
-            if ((rowDifference == 1 && columnDifference == 1)) {
-
-              invalidKingMoves[numOfMoves] = square+currentOffset;
-              numOfMoves++;
-
-            }
-        
-          }
-
-        }
-
-// rook
-      } else if (currentPiece.type == 2) {
-
-// iterate through all squares to the right of the rook
-        for (int i = square+1; i < (square/8)*8 + 7; i++) {
-
-          if (board[square].type != 0) {
-
-            printf("there is a piece in the way of a horizontal (right) rook move at %d\n", i);
-
-            break;
-
-          } else {
-
-            invalidKingMoves[numOfMoves] = i;
-            numOfMoves++;
-
-          }
-
-        }
-
-// iterate through all squares to the left of the rook
-        for (int i = square-1; i > (square/8)*8; i--) {
-
-          if (board[square].type != 0) {
-
-            printf("there is a piece in the way of a horizontal (left) rook move at %d\n", i);
-
-            break;
-
-          } else {
-
-            invalidKingMoves[numOfMoves] = i;
-            numOfMoves++;
-
-          }
-
-        }
-
-        for (int i = square+8; i > (square%8)+56; i+=8) {
-
-          if (board[square].type != 0) {
-
-            printf("there is a piece in the way of a vertical (down) rook move at %d\n", i);
-
-            break;
-
-          } else {
-
-            invalidKingMoves[numOfMoves] = i;
-            numOfMoves++;
-
-          }
-
-        }
-
-        for (int i = square-8; i > square%8; i-=8) {
-
-          if (board[square].type != 0) {
-
-            printf("there is a piece in the way of a vertical (up) rook move at %d\n", i);
-
-            break;
-
-          } else {
-
-            invalidKingMoves[numOfMoves] = i;
-            numOfMoves++;
-
-          }
-
-        }
-      
-// knight
-      } else if (currentPiece.type == 3) {
-
-        int knightMoveOffsets [8] = {-17, -15, -10, -6, 6, 10, 15, 17};
-        int currentOffset;
-
-        int rowDifference, columnDifference;
-
-        for (int i = 0; i < 8; i++) {
-
-          currentOffset = knightMoveOffsets[i];
-
-// knight move would be out of board bounds, go to next iteration
-          if (square + currentOffset < 0 || square + currentOffset > 63) {
-
-            continue;
-
-          }
-
-          rowDifference = abs(((square+currentOffset) / 8) - (square / 8));
-          columnDifference = abs(((square+currentOffset) % 8) - (square % 8));
-
-          if ((rowDifference == 1 && columnDifference == 2) || (rowDifference == 2 && columnDifference == 1)) {
-
-            invalidKingMoves[numOfMoves] = square+currentOffset;
-            numOfMoves++;
-
-          }
-
-        }
-
-      }
-
-    }
-
-
-// if black
-  } else {
-
-    for (int i = 0; i < 64; i++) {
-
-      piece currentPiece = board[i];
+        pawnMoves[numOfMoves] = i;
+        numOfMoves++;
 
     }
 
@@ -633,7 +538,157 @@ void movesUnderCheck(struct piece board[64], int invalidKingMoves[64], int colou
 
 }
 
-void moveToCoordinates (struct pieceMove move, int * currentPosition, int * destinationPosition) {
+void returnRookMoves(struct pieceMove move, struct piece board[64], int rookMoves[64], int colour) {
+
+  int numOfMoves = 0;
+
+  int currentPosition, destinationPosition;
+  moveToSquare(move, &currentPosition, &destinationPosition);
+
+  typedef struct pieceMove pieceMove;
+  pieceMove tempMove;
+  char coordinate [5];
+
+  strcpy(tempMove.current, move.current);
+
+  for (int i = 0; i < 64; i++) {
+
+    squareToMove(i, coordinate);
+
+    strcpy(tempMove.destination, coordinate);
+
+    if (isRookMoveValid(tempMove, board, colour) == 1) {
+
+        rookMoves[numOfMoves] = i;
+        numOfMoves++;
+
+    }
+
+  }
+
+}
+
+void returnKnightMoves(struct pieceMove move, struct piece board[64], int knightMoves[64], int colour) {
+
+  int numOfMoves = 0;
+
+  int currentPosition, destinationPosition;
+  moveToSquare(move, &currentPosition, &destinationPosition);
+
+  typedef struct pieceMove pieceMove;
+  pieceMove tempMove;
+  char coordinate [5];
+
+  strcpy(tempMove.current, move.current);
+
+  for (int i = 0; i < 64; i++) {
+
+    squareToMove(i, coordinate);
+
+    strcpy(tempMove.destination, coordinate);
+
+    if (isKnightMoveValid(tempMove, board, colour) == 1) {
+
+        knightMoves[numOfMoves] = i;
+        numOfMoves++;
+
+    }
+
+  }
+
+}
+
+void returnBishopMoves(struct pieceMove move, struct piece board[64], int bishopMoves[64], int colour) {
+
+  int numOfMoves = 0;
+
+  int currentPosition, destinationPosition;
+  moveToSquare(move, &currentPosition, &destinationPosition);
+
+  typedef struct pieceMove pieceMove;
+  pieceMove tempMove;
+  char coordinate [5];
+
+  strcpy(tempMove.current, move.current);
+
+  for (int i = 0; i < 64; i++) {
+
+    squareToMove(i, coordinate);
+
+    strcpy(tempMove.destination, coordinate);
+
+    if (isBishopMoveValid(tempMove, board, colour) == 1) {
+
+        bishopMoves[numOfMoves] = i;
+        numOfMoves++;
+
+    }
+
+  } 
+
+}
+
+void returnQueenMoves(struct pieceMove move, struct piece board[64], int queenMoves[64], int colour) {
+
+  int numOfMoves = 0;
+
+  int currentPosition, destinationPosition;
+  moveToSquare(move, &currentPosition, &destinationPosition);
+
+  typedef struct pieceMove pieceMove;
+  pieceMove tempMove;
+  char coordinate [5];
+
+  strcpy(tempMove.current, move.current);
+
+  for (int i = 0; i < 64; i++) {
+
+    squareToMove(i, coordinate);
+
+    strcpy(tempMove.destination, coordinate);
+
+    if (isQueenMoveValid(tempMove, board, colour) == 1) {
+
+        queenMoves[numOfMoves] = i;
+        numOfMoves++;
+
+    }
+
+  } 
+
+}
+
+void returnKingMoves(struct pieceMove move, struct piece board[64], int kingMoves[64], int colour) {
+
+  int numOfMoves = 0;
+
+  int currentPosition, destinationPosition;
+  moveToSquare(move, &currentPosition, &destinationPosition);
+
+  typedef struct pieceMove pieceMove;
+  pieceMove tempMove;
+  char coordinate [5];
+
+  strcpy(tempMove.current, move.current);
+
+  for (int i = 0; i < 64; i++) {
+
+    squareToMove(i, coordinate);
+
+    strcpy(tempMove.destination, coordinate);
+
+    if (isKingMoveValid(tempMove, board, colour) == 1) {
+
+        kingMoves[numOfMoves] = i;
+        numOfMoves++;
+
+    }
+
+  } 
+
+}
+
+void moveToSquare (struct pieceMove move, int * currentPosition, int * destinationPosition) {
 
     switch (move.current[1]) {
 
@@ -791,4 +846,21 @@ void moveToCoordinates (struct pieceMove move, int * currentPosition, int * dest
       * destinationPosition = -1;
 
   }
+
+}
+
+void squareToMove(int squareNum, char coordinate [5]) {
+
+  if (squareNum > 63 || squareNum < 0) {
+
+    coordinate[0] = '\0';
+    
+  } else {
+
+    coordinate[0] = 'a' + (squareNum % 8);
+    coordinate[1] = '8' - (squareNum / 8);
+    coordinate[2] = '\0';
+
+  }
+
 }
