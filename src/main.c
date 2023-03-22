@@ -2,6 +2,8 @@
 
 int main () {
 
+  srand(time(NULL));
+
 // initializing piece structs
   typedef struct piece piece;
   piece wP = {}, wR = {}, wN = {}, wB = {}, wQ = {}, wK = {}, bP = {}, bR = {}, bN = {}, bB = {}, bQ = {}, bK = {};
@@ -12,7 +14,10 @@ int main () {
   piece blank = {};
   blank.type = 0;
 
-  int colour, currentPosition, destinationPosition;
+  int mySquares[16];
+  int enemySquares[16];
+
+  int colour, opponentColour, currentPosition, destinationPosition;
 
   piece board [64] = {
 //   a   b   c   d   e   f   g   h
@@ -32,6 +37,16 @@ int main () {
 
   printf("Do you want to play as white (1) or black (2)? ");
   scanf("%d", &colour);
+
+  if (colour == 1) {
+
+    opponentColour = 2;
+
+  } else {
+
+    opponentColour = 1;
+
+  }
 
   while (1) {
 
@@ -78,6 +93,23 @@ int main () {
     piece currentPiece = board[currentPosition];
 
     doMove(move, currentPiece, board, colour);
+
+
+// enemy turn
+
+    if (colour == 1) {
+
+      returnWhiteOccupiedSquares(board, mySquares);
+      returnBlackOccupiedSquares(board, enemySquares);
+
+    } else {
+
+      returnWhiteOccupiedSquares(board, enemySquares);
+      returnBlackOccupiedSquares(board, mySquares);
+
+    }
+
+    enemyDoRandomMove(board, enemySquares, opponentColour);
 
   }
 

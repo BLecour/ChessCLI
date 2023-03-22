@@ -164,17 +164,27 @@ void printPossibleMoves (struct pieceMove move, struct piece board[64], int colo
   moveToSquare(move, &currentPosition, &destinationPosition);
 
   int possibleMoves[64];
+  int possibleCaptures[64];
   char coordinate [5];
 
-  for (int i = 0; i < 64; i++) {
-
-    possibleMoves[i] = -1;
-
-  }
+  resetArray(possibleMoves, 64);
+  resetArray(possibleCaptures, 64);
 
   int currentType = board[currentPosition].type;
 
   if (currentType == 1 || currentType == -1) {
+
+    returnPawnCaptures(move, board, possibleCaptures, colour);
+
+    printf("Possible pawn captures are: ");
+
+    for (int i = 0; i < 64; i++) {
+
+      squareToMove(possibleCaptures[i], coordinate);
+
+      printf("%s ", coordinate);
+
+    }
 
     returnPawnMoves(move, board, possibleMoves, colour);
 
@@ -211,5 +221,15 @@ void printPossibleMoves (struct pieceMove move, struct piece board[64], int colo
   }
 
   printf("\n");
+
+}
+
+void resetArray(int * array, int len) {
+
+  for (int i = 0; i < len; i++) {
+
+    array[i] = -1;
+
+  }
 
 }
