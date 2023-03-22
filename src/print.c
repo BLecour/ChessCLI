@@ -186,6 +186,8 @@ void printPossibleMoves (struct pieceMove move, struct piece board[64], int colo
 
     }
 
+    printf("\n");
+
     returnPawnMoves(move, board, possibleMoves, colour);
 
   } else if (currentType == 2 || currentType == -2) {

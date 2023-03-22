@@ -94,7 +94,6 @@ int main () {
 
     doMove(move, currentPiece, board, colour);
 
-
 // enemy turn
 
     if (colour == 1) {

@@ -400,14 +400,11 @@ int isQueenMoveValid (struct pieceMove move, struct piece board[64], int colour)
 // if it fails both the rook and bishop test, it is not a legal queen move
   if (rookLegal == 0 && bishopLegal == 0) {
 
-    printf("rookLegal = %d and bishopLegal = %d, failed both\n", rookLegal, bishopLegal);
-
     return 0;
 
   }
 
 // if it passes either the rook or bishop test, it is a legal queen move
-  printf("rookLegal = %d and bishopLegal = %d, passed!\n", rookLegal, bishopLegal);
 
   return 1;
 
@@ -429,8 +426,6 @@ int isKingMoveValid (struct pieceMove move, struct piece board[64], int colour) 
 
 // check for castling for white
   if ((colour == 1 && currentPosition == 60 && (destinationPosition == 62 || destinationPosition == 58)) || (colour == 2 && currentPosition == 4 && (destinationPosition == 6 || destinationPosition == 2))) {
-
-    printf("calling canKingCastle line 436\n");
 
     return canKingCastle(move, board, colour);
 
@@ -515,9 +510,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], int colour) {
   resetArray(captures, 64);
 
 // check that the king isn't in check
-
-  printf("calling isKingInCheck on line 521\n");
-
   if (isKingInCheck(board, colour)) {
 
     return 0;
@@ -539,7 +531,7 @@ int canKingCastle (struct pieceMove move, struct piece board[64], int colour) {
 // check that there are no pieces in the way
     if (board[61].type != 0 || board[62].type != 0) {
 
-      printf("pieces in the way of white kingside castle\n");
+      printf("pieces in the way of white kingside castle, board[61].type = %d  and board[62].type = %d\n", board[61].type, board[62].type);
       return 0;
 
     }
@@ -662,6 +654,43 @@ void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[
 
   int currentPosition, destinationPosition;
   moveToSquare(move, &currentPosition, &destinationPosition);
+
+  if (abs(board[currentPosition].type) == 6 && canKingCastle(move, board, colour)) {
+
+    typedef struct pieceMove pieceMove;
+    pieceMove move;
+
+    if (destinationPosition == 62) {
+
+      strcpy(move.current, "h1");
+      strcpy(move.destination, "f1");
+
+      doMove(move, board[63], board, 0);
+
+    } else if (destinationPosition == 58) {
+
+      strcpy(move.current, "a1");
+      strcpy(move.destination, "d1");
+
+      doMove(move, board[56], board, 0);
+
+    } else if (destinationPosition == 6) {
+
+      strcpy(move.current, "h8");
+      strcpy(move.destination, "d8");
+
+      doMove(move, board[7], board, 0);
+
+    } else if (destinationPosition == 2) {
+
+      strcpy(move.current, "a8");
+      strcpy(move.destination, "d8");
+
+      doMove(move, board[0], board, 0);
+
+    }
+
+  }
   
 // create a null piece to signify empty space
   typedef struct piece piece;
@@ -883,8 +912,6 @@ void returnKingMoves(struct pieceMove move, struct piece board[64], int kingMove
     squareToMove(i, coordinate);
 
     strcpy(tempMove.destination, coordinate);
-
-    printf("calling isKingMoveValid on line 887\n");
 
     if (isKingMoveValid(tempMove, board, colour) == 1) {
 

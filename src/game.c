@@ -40,8 +40,6 @@ void returnBlackOccupiedSquares (struct piece board[64], int blackOccupiedSquare
 
 void returnWhitePossibleCaptures (struct piece board[64], int whitePossibleCaptures[64], int colour) {
 
-  printf("*********************************** RETURN WHITE CAPTURES *******************************************\n");
-
   typedef struct pieceMove pieceMove;
   pieceMove move;
 
@@ -69,8 +67,6 @@ void returnWhitePossibleCaptures (struct piece board[64], int whitePossibleCaptu
 
   }
 
-  printf("There are %d white pieces\n", pieceCount);
-
 // loop through all of white's pieces
   for (int i = 0; i < pieceCount; i++) {
 
@@ -80,32 +76,30 @@ void returnWhitePossibleCaptures (struct piece board[64], int whitePossibleCaptu
 
     squareToMove(whiteOccupiedSquares[i], move.current);
 
-    printf("looking at #%d white piece, it is of type %d and at coordinate %s and whiteOccupiedSquares[%d] = %d\n", i, currentType, move.current, i, whiteOccupiedSquares[i]);
-
     switch (currentType) {
 
       case 1:
-      returnPawnMoves(move, board, piecePossibleCaptures, colour);
+      returnPawnMoves(move, board, piecePossibleCaptures, 1);
       break;
 
       case 2:
-      returnRookMoves(move, board, piecePossibleCaptures, colour);
+      returnRookMoves(move, board, piecePossibleCaptures, 1);
       break;
 
       case 3:
-      returnKnightMoves(move, board, piecePossibleCaptures, colour);
+      returnKnightMoves(move, board, piecePossibleCaptures, 1);
       break;
 
       case 4:
-      returnBishopMoves(move, board, piecePossibleCaptures, colour);
+      returnBishopMoves(move, board, piecePossibleCaptures, 1);
       break;
 
       case 5:
-      returnQueenMoves(move, board, piecePossibleCaptures, colour);
+      returnQueenMoves(move, board, piecePossibleCaptures, 1);
       break;
 
       case 6:
-      returnKingMoves(move, board, piecePossibleCaptures, colour);
+      returnKingMoves(move, board, piecePossibleCaptures, 1);
       break;
 
     }
@@ -115,8 +109,6 @@ void returnWhitePossibleCaptures (struct piece board[64], int whitePossibleCaptu
       if (piecePossibleCaptures[i] != -1) {
 
         whitePossibleCaptures[piecePossibleCaptures[i]] = piecePossibleCaptures[i];
-
-        printf("White capture at %d", piecePossibleCaptures[i]);
 
       } else {
 
@@ -131,8 +123,6 @@ void returnWhitePossibleCaptures (struct piece board[64], int whitePossibleCaptu
 }
 
 void returnBlackPossibleCaptures (struct piece board[64], int blackPossibleCaptures[64], int colour) {
-
-  printf("*********************************** RETURN BLACK CAPTURES *******************************************\n");
 
   typedef struct pieceMove pieceMove;
   pieceMove move;
@@ -161,8 +151,6 @@ void returnBlackPossibleCaptures (struct piece board[64], int blackPossibleCaptu
 
   }
 
-  printf("There are %d black pieces\n", pieceCount);
-
 // loop through all of black's pieces
   for (int i = 0; i < pieceCount; i++) {
 
@@ -172,32 +160,30 @@ void returnBlackPossibleCaptures (struct piece board[64], int blackPossibleCaptu
 
     squareToMove(blackOccupiedSquares[i], move.current);
 
-    printf("looking at #%d black piece, it is of type %d and at coordinate %s and blackOccupiedSquares[%d] = %d\n", i, currentType, move.current, i, blackOccupiedSquares[i]);
-
     switch (currentType) {
 
       case 1:
-      returnPawnMoves(move, board, piecePossibleCaptures, colour);
+      returnPawnMoves(move, board, piecePossibleCaptures, 2);
       break;
 
       case 2:
-      returnRookMoves(move, board, piecePossibleCaptures, colour);
+      returnRookMoves(move, board, piecePossibleCaptures, 2);
       break;
 
       case 3:
-      returnKnightMoves(move, board, piecePossibleCaptures, colour);
+      returnKnightMoves(move, board, piecePossibleCaptures, 2);
       break;
 
       case 4:
-      returnBishopMoves(move, board, piecePossibleCaptures, colour);
+      returnBishopMoves(move, board, piecePossibleCaptures, 2);
       break;
 
       case 5:
-      returnQueenMoves(move, board, piecePossibleCaptures, colour);
+      returnQueenMoves(move, board, piecePossibleCaptures, 2);
       break;
 
       case 6:
-      returnKingMoves(move, board, piecePossibleCaptures, colour);
+      returnKingMoves(move, board, piecePossibleCaptures, 2);
       break;
 
     }
@@ -207,8 +193,6 @@ void returnBlackPossibleCaptures (struct piece board[64], int blackPossibleCaptu
       if (piecePossibleCaptures[i] != -1) {
 
         blackPossibleCaptures[piecePossibleCaptures[i]] = piecePossibleCaptures[i];
-
-        printf("Black capture at %d\n", piecePossibleCaptures[i]);
 
       } else {
 
@@ -251,8 +235,6 @@ void enemyDoRandomMove (struct piece board[64], int enemyOccupiedSquares[16], in
 
     chosenPiece = rand() % pieceCount;
 
-    printf("randomly chosen piece = %d\n", chosenPiece);
-
     squareToMove(chosenPiece, move.current);
 
 // get moves for the randomly chosen piece
@@ -288,8 +270,6 @@ void enemyDoRandomMove (struct piece board[64], int enemyOccupiedSquares[16], in
     for (int i = 0; i < 64; i++) {
 
       if (pieceMoves[i] != -1) {
-
-        printf("RANDOMLY CHOSEN PIECE CAN MOVE TO %d\n", pieceMoves[i]);
 
         moveCount++;  
 
