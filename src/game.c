@@ -38,7 +38,7 @@ void returnBlackOccupiedSquares (struct piece board[64], int blackOccupiedSquare
 
 }
 
-void returnWhitePossibleCaptures (struct piece board[64], int whitePossibleCaptures[64], int colour) {
+void returnWhitePossibleCaptures (struct piece board[64], struct piece previousBoard[64], int whitePossibleCaptures[64], int colour) {
 
   typedef struct pieceMove pieceMove;
   pieceMove move;
@@ -79,27 +79,27 @@ void returnWhitePossibleCaptures (struct piece board[64], int whitePossibleCaptu
     switch (currentType) {
 
       case 1:
-      returnPawnMoves(move, board, piecePossibleCaptures, 1);
+      returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 1);
       break;
 
       case 2:
-      returnRookMoves(move, board, piecePossibleCaptures, 1);
+      returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 1);
       break;
 
       case 3:
-      returnKnightMoves(move, board, piecePossibleCaptures, 1);
+      returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 1);
       break;
 
       case 4:
-      returnBishopMoves(move, board, piecePossibleCaptures, 1);
+      returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 1);
       break;
 
       case 5:
-      returnQueenMoves(move, board, piecePossibleCaptures, 1);
+      returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 1);
       break;
 
       case 6:
-      returnKingMoves(move, board, piecePossibleCaptures, 1);
+      returnKingMoves(move, board, previousBoard, piecePossibleCaptures, 1);
       break;
 
     }
@@ -122,7 +122,7 @@ void returnWhitePossibleCaptures (struct piece board[64], int whitePossibleCaptu
 
 }
 
-void returnBlackPossibleCaptures (struct piece board[64], int blackPossibleCaptures[64], int colour) {
+void returnBlackPossibleCaptures (struct piece board[64], struct piece previousBoard[64], int blackPossibleCaptures[64], int colour) {
 
   typedef struct pieceMove pieceMove;
   pieceMove move;
@@ -163,27 +163,27 @@ void returnBlackPossibleCaptures (struct piece board[64], int blackPossibleCaptu
     switch (currentType) {
 
       case 1:
-      returnPawnMoves(move, board, piecePossibleCaptures, 2);
+      returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 2);
       break;
 
       case 2:
-      returnRookMoves(move, board, piecePossibleCaptures, 2);
+      returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 2);
       break;
 
       case 3:
-      returnKnightMoves(move, board, piecePossibleCaptures, 2);
+      returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 2);
       break;
 
       case 4:
-      returnBishopMoves(move, board, piecePossibleCaptures, 2);
+      returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 2);
       break;
 
       case 5:
-      returnQueenMoves(move, board, piecePossibleCaptures, 2);
+      returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 2);
       break;
 
       case 6:
-      returnKingMoves(move, board, piecePossibleCaptures, 2);
+      returnKingMoves(move, board, previousBoard, piecePossibleCaptures, 2);
       break;
 
     }
@@ -206,7 +206,7 @@ void returnBlackPossibleCaptures (struct piece board[64], int blackPossibleCaptu
 
 }
 
-void enemyDoRandomMove (struct piece board[64], int enemyOccupiedSquares[16], int colour) {
+void enemyDoRandomMove (struct piece board[64], struct piece previousBoard[64], int enemyOccupiedSquares[16], int colour) {
 
   typedef struct pieceMove pieceMove;
   pieceMove move;
@@ -241,27 +241,27 @@ void enemyDoRandomMove (struct piece board[64], int enemyOccupiedSquares[16], in
     switch (abs(board[chosenPiece].type)) {
 
       case 1:
-      returnPawnMoves(move, board, pieceMoves, colour);
+      returnPawnMoves(move, board, previousBoard, pieceMoves, colour);
       break;
 
       case 2:
-      returnRookMoves(move, board, pieceMoves, colour);
+      returnRookMoves(move, board, previousBoard, pieceMoves, colour);
       break;
 
       case 3:
-      returnKnightMoves(move, board, pieceMoves, colour);
+      returnKnightMoves(move, board, previousBoard, pieceMoves, colour);
       break;
 
       case 4:
-      returnBishopMoves(move, board, pieceMoves, colour);
+      returnBishopMoves(move, board, previousBoard, pieceMoves, colour);
       break;
 
       case 5:
-      returnQueenMoves(move, board, pieceMoves, colour);
+      returnQueenMoves(move, board, previousBoard, pieceMoves, colour);
       break;
 
       case 6:
-      returnKingMoves(move, board, pieceMoves, colour);
+      returnKingMoves(move, board, previousBoard, pieceMoves, colour);
       break;
 
     }
@@ -289,6 +289,6 @@ void enemyDoRandomMove (struct piece board[64], int enemyOccupiedSquares[16], in
 
   squareToMove(pieceMoves[chosenMove], move.destination);
 
-  doMove(move, board[chosenPiece], board, colour);
+  doMove(move, board[chosenPiece], board, previousBoard, colour);
 
 }

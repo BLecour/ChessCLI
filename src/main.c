@@ -32,6 +32,8 @@ int main () {
  //  a   b   c   d   e   f   g   h 
   }; 
 
+  piece previousBoard [64] = {0};
+
   typedef struct pieceMove pieceMove;
   pieceMove move;
 
@@ -52,7 +54,10 @@ int main () {
 
     if (colour == 1) {
 
+      printf("CURRENT BOARD:\n");
       printBoard(board);
+      printf("PREVIOUS BOARD:\n");
+      printBoard(previousBoard);
 
     } else {
 
@@ -68,14 +73,14 @@ int main () {
       printf("Enter the coordinates of the piece you want to move: ");
       scanf(" %s", move.current);
     
-      printPossibleMoves(move, board, colour);
+      printPossibleMoves(move, board, previousBoard, colour);
 
       printf("Enter where you want to move the piece (or enter 0 to restart): ");
       scanf(" %s", move.destination);
 
       if (move.destination[0] != '0') {
 
-        while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, colour) != 1)) {
+        while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, previousBoard, colour) != 1)) {
 
           printf("Not a valid move. Enter the coordinates of the piece you want to move: ");
           scanf(" %s", move.current);
@@ -92,7 +97,7 @@ int main () {
 
     piece currentPiece = board[currentPosition];
 
-    doMove(move, currentPiece, board, colour);
+    doMove(move, currentPiece, board, previousBoard, colour);
 
 // enemy turn
 
@@ -108,7 +113,7 @@ int main () {
 
     }
 
-    enemyDoRandomMove(board, enemySquares, opponentColour);
+    enemyDoRandomMove(board, previousBoard, enemySquares, opponentColour);
 
   }
 

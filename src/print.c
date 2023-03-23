@@ -158,7 +158,7 @@ void printPiece (int num) {
   
 }
 
-void printPossibleMoves (struct pieceMove move, struct piece board[64], int colour) {
+void printPossibleMoves (struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int colour) {
 
   int currentPosition, destinationPosition;
   moveToSquare(move, &currentPosition, &destinationPosition);
@@ -174,7 +174,7 @@ void printPossibleMoves (struct pieceMove move, struct piece board[64], int colo
 
   if (currentType == 1 || currentType == -1) {
 
-    returnPawnCaptures(move, board, possibleCaptures, colour);
+    returnPawnCaptures(move, board, previousBoard, possibleCaptures, colour);
 
     printf("Possible pawn captures are: ");
 
@@ -188,27 +188,27 @@ void printPossibleMoves (struct pieceMove move, struct piece board[64], int colo
 
     printf("\n");
 
-    returnPawnMoves(move, board, possibleMoves, colour);
+    returnPawnMoves(move, board, previousBoard, possibleMoves, colour);
 
   } else if (currentType == 2 || currentType == -2) {
 
-    returnRookMoves(move, board, possibleMoves, colour);
+    returnRookMoves(move, board, previousBoard, possibleMoves, colour);
 
   } else if (currentType == 3 || currentType == -3) {
 
-    returnKnightMoves(move, board, possibleMoves, colour);
+    returnKnightMoves(move, board, previousBoard, possibleMoves, colour);
 
   } else if (currentType == 4 || currentType == -4) {
 
-    returnBishopMoves(move, board, possibleMoves, colour);
+    returnBishopMoves(move, board, previousBoard, possibleMoves, colour);
 
   } else if (currentType == 5 || currentType == -5) {
 
-    returnQueenMoves(move, board, possibleMoves, colour);
+    returnQueenMoves(move, board, previousBoard, possibleMoves, colour);
 
   } else if (currentType == 6 || currentType == -6) {
 
-    returnKingMoves(move, board, possibleMoves, colour);
+    returnKingMoves(move, board, previousBoard, possibleMoves, colour);
 
   } 
 
