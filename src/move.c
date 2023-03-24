@@ -90,6 +90,9 @@ int isPawnMoveValid (struct pieceMove move, struct piece board[64], struct piece
 
   int distance = destinationPosition-currentPosition;
 
+  rowDifference = abs(((currentPosition) / 8) - (destinationPosition / 8));
+  columnDifference = abs(((currentPosition) % 8) - (destinationPosition % 8));
+
 // perform general checks to see if move is valid
   if (isAnyMoveValid(move, board, previousBoard, colour) == 0) {
     
@@ -104,11 +107,15 @@ int isPawnMoveValid (struct pieceMove move, struct piece board[64], struct piece
 
   }
 
+// check is white pawn can do en passant
+  if (canPawnEnPassant(move, board, previousBoard, colour)) {
+
+    return 1;
+
+  }
+
 // check if pawn can take another piece
   if ((distance == -7 && board[destinationPosition].type < 0 && colour == 1) || (distance == -9 && board[destinationPosition].type < 0 && colour == 1) || (distance == 7 && board[destinationPosition].type > 0 && colour == 2) || (distance == 9 && board[destinationPosition].type > 0 && colour == 2)) {
-
-    rowDifference = abs(((currentPosition) / 8) - (destinationPosition / 8));
-    columnDifference = abs(((currentPosition) % 8) - (destinationPosition % 8));
 
 // make sure that pawn isn't moving across the board
     if (rowDifference == 1 && columnDifference == 1) {
@@ -183,27 +190,15 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], struct piece
 
   }
 
-  printf("********************************************************************\n");
-
-  printf("checking rook currentPosition = %d and destinationPosition = %d\n", currentPosition, destinationPosition);
-
 // check if any pieces are in the way of horizontal move
   if (move.current[1] == move.destination[1]) {
 
-    printf("horizontal move\n");
-
     if (distance > 0) {
-
-      printf("RIGHT\n");
 
 // iterate through all squares inbetween pieces (to the right)
       for (int i = currentPosition+1; i < destinationPosition; i++) {
 
-        printf("checking right rook move at i = %d\n", i);
-
         if (board[i].type != 0) {
-
-          printf("above move is invalid\n");
 
           return 0;
 
@@ -215,16 +210,10 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], struct piece
 
     } else {
 
-      printf("LEFT\n");
-
 // iterate through all squares inbetween pieces (to the left)
       for (int i = currentPosition-1; i > destinationPosition; i--) {
 
-        printf("checking left rook move at i = %d\n", i);
-
         if (board[i].type != 0) {
-
-          printf("above move is invalid\n");
 
           return 0;
 
@@ -240,8 +229,6 @@ int isRookMoveValid (struct pieceMove move, struct piece board[64], struct piece
 
 // check if any pieces are in the way of vertical move
   if (abs(distance) % 8 == 0) {
-
-    printf("vertical move\n");
 
     if (distance > 0) {
 
@@ -549,7 +536,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that there are no pieces in the way
     if (board[61].type != 0 || board[62].type != 0) {
 
-      printf("pieces in the way of white kingside castle, board[61].type = %d  and board[62].type = %d\n", board[61].type, board[62].type);
       return 0;
 
     }
@@ -557,7 +543,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that the rook hasn't moved
     if (board[63].moves != 0 && board[63].type == 2) {
 
-      printf("rook has already moved in white kingside castle\n");
       return 0;
 
     }
@@ -567,7 +552,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that the squares in between aren't under attack
     if (captures[61] != -1 || captures[62] != -1) {
 
-      printf("squares in between are under attack\n");
       return 0;
 
     }
@@ -579,7 +563,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that there are no pieces in the way
     if (board[57].type != 0 || board[58].type != 0 || board[59].type != 0) {
 
-      printf("pieces in the way of white queenside castle\n");
       return 0;
 
     }
@@ -587,7 +570,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that the rook hasn't moved
     if (board[56].moves != 0 && board[56].type == 2) {
 
-      printf("rook has already moved in white queenside castle\n");
       return 0;
 
     }
@@ -597,7 +579,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that the squares in between aren't under attack
     if (captures[57] != -1 || captures[58] != -1 || captures[59] != -1) {
 
-      printf("squares in between are under attack\n");
       return 0;
 
     }
@@ -609,7 +590,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that there are no pieces in the way
     if (board[5].type != 0 || board[6].type != 0) {
 
-      printf("pieces in the way of black kingside castle\n");
       return 0;
 
     }
@@ -617,7 +597,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that the rook hasn't moved
     if (board[7].moves != 0 && board[7].type == 2) {
 
-      printf("rook has already moved in black kingside castle\n");
       return 0;
 
     }
@@ -627,7 +606,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that the squares in between aren't under attack
     if (captures[5] != -1 || captures[6] != -1) {
 
-      printf("squares in between are under attack\n");
       return 0;
 
     }
@@ -639,7 +617,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that there are no pieces in the way
     if (board[1].type != 0 || board[2].type != 0 || board[3].type != 0) {
 
-      printf("pieces in the way of black queenside castle\n");
       return 0;
 
     }
@@ -647,7 +624,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that the rook hasn't moved
     if (board[0].moves != 0 && board[0].type == 2) {
 
-      printf("rook has already moved in black queenside castle\n");
       return 0;
 
     }
@@ -657,7 +633,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that the squares in between aren't under attack
     if (captures[1] != -1 || captures[2] != -1 || captures[3] != -1) {
 
-      printf("squares in between are under attack\n");
       return 0;
 
     }
@@ -668,18 +643,70 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 
 }
 
+int canPawnEnPassant (struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int colour) {
+
+  int currentPosition, destinationPosition, rowDifference, columnDifference;
+  moveToSquare(move, &currentPosition, &destinationPosition);
+  
+  rowDifference = abs(((currentPosition) / 8) - (destinationPosition / 8));
+  columnDifference = abs(((currentPosition) % 8) - (destinationPosition % 8));
+
+// check is white pawn can do en passant
+  if (colour == 1 && (currentPosition / 8 == 3) && previousBoard[destinationPosition+8].type == 0 && board[destinationPosition+8].type == -1 && board[destinationPosition+8].moves == 1) {
+
+// make sure that pawn isn't moving across the board
+    if (rowDifference == 1 && columnDifference == 1) {
+
+      return 1;
+
+    }
+
+  }
+
+// check is black pawn can do en passant
+  if (colour == 2 && (currentPosition / 8 == 4) && previousBoard[destinationPosition-8].type == 0 && board[destinationPosition-8].type == 1 && board[destinationPosition-8].moves == 1) {
+
+// make sure that pawn isn't moving across the board
+    if (rowDifference == 1 && columnDifference == 1) {
+
+      return 1;
+
+    }
+
+  }
+
+  return 0;
+
+}
+
 void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[64], struct piece previousBoard[64], int colour) {
 
-// copy current board to previousBoard before any changes are made
+  int currentPosition, destinationPosition;
+  moveToSquare(move, &currentPosition, &destinationPosition);
+
+// en passant
+  if (abs(board[currentPosition].type) == 1 && canPawnEnPassant(move, board, previousBoard, colour)) {
+
+    if (colour == 1) {
+
+      board[destinationPosition+8].type = 0;
+
+    } else {
+
+      board[destinationPosition-8].type = 0;
+
+    }
+
+  }
+
+// copy current board to previousBoard. it has to be past the en passant for it to work. do i know why? nope
   for (int i = 0; i < 64; i++) {
 
     previousBoard[i] = board[i];
     
   }
 
-  int currentPosition, destinationPosition;
-  moveToSquare(move, &currentPosition, &destinationPosition);
-
+// castling
   if (abs(board[currentPosition].type) == 6 && canKingCastle(move, board, previousBoard, colour)) {
 
     typedef struct pieceMove pieceMove;
@@ -702,7 +729,7 @@ void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[
     } else if (destinationPosition == 6) {
 
       strcpy(move.current, "h8");
-      strcpy(move.destination, "d8");
+      strcpy(move.destination, "f8");
 
       doMove(move, board[7], board, previousBoard, 0);
 
@@ -717,14 +744,9 @@ void doMove (struct pieceMove move, struct piece movedPiece, struct piece board[
 
   }
   
-// create a null piece to signify empty space
-  typedef struct piece piece;
-  piece blank = {};
-  blank.type = 0;
-
   movedPiece.moves++;
 
-  board[currentPosition] = blank;
+  board[currentPosition].type = 0;
   board[destinationPosition] = movedPiece;
 
 }

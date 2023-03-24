@@ -60,6 +60,8 @@ int isKingInCheck (struct piece board[64], struct piece previousBoard[64], int c
 
 int canKingCastle (struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int colour);
 
+int canPawnEnPassant (struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int colour);
+
 void doMove (struct pieceMove move, struct piece piece, struct piece board[64], struct piece previousBoard[64], int colour);
 
 void returnPawnMoves(struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int pawnMoves[64], int colour);

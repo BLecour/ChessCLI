@@ -17,7 +17,7 @@ int main () {
   int mySquares[16];
   int enemySquares[16];
 
-  int colour, opponentColour, currentPosition, destinationPosition;
+  int colour, opponentColour, currentPosition, destinationPosition, turn = 1;
 
   piece board [64] = {
 //   a   b   c   d   e   f   g   h
@@ -54,10 +54,7 @@ int main () {
 
     if (colour == 1) {
 
-      printf("CURRENT BOARD:\n");
       printBoard(board);
-      printf("PREVIOUS BOARD:\n");
-      printBoard(previousBoard);
 
     } else {
 
@@ -69,23 +66,57 @@ int main () {
 
     while (move.destination[0] == '0') {
 
+      if (turn == 1) {
+
 // if user enters more than 2 characters then it creates a memory error where it changes board[0].type
-      printf("Enter the coordinates of the piece you want to move: ");
-      scanf(" %s", move.current);
-    
-      printPossibleMoves(move, board, previousBoard, colour);
+        printf("Enter the coordinates of the white piece you want to move: ");
+        scanf(" %s", move.current);
+      
+        printPossibleMoves(move, board, previousBoard, turn);
 
-      printf("Enter where you want to move the piece (or enter 0 to restart): ");
-      scanf(" %s", move.destination);
+        printf("Enter where you want to move the white piece (or enter 0 to restart): ");
+        scanf(" %s", move.destination);
 
-      if (move.destination[0] != '0') {
+        if (move.destination[0] != '0') {
 
-        while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, previousBoard, colour) != 1)) {
+          while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, previousBoard, turn) != 1)) {
 
-          printf("Not a valid move. Enter the coordinates of the piece you want to move: ");
-          scanf(" %s", move.current);
-          printf("Enter where you want to move the piece (or enter 0 to restart): ");
-          scanf(" %s", move.destination);
+            printf("Not a valid move. Enter the coordinates of the white piece you want to move: ");
+            scanf(" %s", move.current);
+
+            printPossibleMoves(move, board, previousBoard, turn);
+
+            printf("Enter where you want to move the white piece (or enter 0 to restart): ");
+            scanf(" %s", move.destination);
+
+          }
+
+        }
+
+      } else {
+
+// if user enters more than 2 characters then it creates a memory error where it changes board[0].type
+        printf("Enter the coordinates of the black piece you want to move: ");
+        scanf(" %s", move.current);
+      
+        printPossibleMoves(move, board, previousBoard, turn);
+
+        printf("Enter where you want to move the black piece (or enter 0 to restart): ");
+        scanf(" %s", move.destination);
+
+        if (move.destination[0] != '0') {
+
+          while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, previousBoard, turn) != 1)) {
+
+            printf("Not a valid move. Enter the coordinates of the black piece you want to move: ");
+            scanf(" %s", move.current);
+
+            printPossibleMoves(move, board, previousBoard, turn);
+
+            printf("Enter where you want to move the black piece (or enter 0 to restart): ");
+            scanf(" %s", move.destination);
+
+          }
 
         }
 
@@ -97,11 +128,11 @@ int main () {
 
     piece currentPiece = board[currentPosition];
 
-    doMove(move, currentPiece, board, previousBoard, colour);
+    doMove(move, currentPiece, board, previousBoard, turn);
 
 // enemy turn
 
-    if (colour == 1) {
+    if (turn == 1) {
 
       returnWhiteOccupiedSquares(board, mySquares);
       returnBlackOccupiedSquares(board, enemySquares);
@@ -113,7 +144,17 @@ int main () {
 
     }
 
-    enemyDoRandomMove(board, previousBoard, enemySquares, opponentColour);
+    if (turn == 1) {
+
+      turn = 2;
+
+    } else {
+
+      turn = 1;
+
+    }
+
+    // enemyDoRandomMove(board, previousBoard, enemySquares, opponentColour);
 
   }
 
