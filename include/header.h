@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <time.h>
 
 struct piece {
@@ -18,6 +19,8 @@ struct pieceMove {
 };
 
 // print.c
+void fenDecode (struct piece board[64], struct piece previousBoard[64], char FEN[100], int * turn);
+
 void printBoard (struct piece board[64]);
 
 void printBlackBoard (struct piece board[64]);
@@ -37,7 +40,9 @@ void returnWhitePossibleCaptures (struct piece board[64], struct piece previousB
 
 void returnBlackPossibleCaptures (struct piece board[64], struct piece previousBoard[64], int blackPossibleCaptures[64], int colour);
 
-void enemyDoRandomMove (struct piece board[64], struct piece previousBoard[64], int enemyOccupiedSquares[16], int colour);
+int isItCheckmate (struct piece board[64], struct piece previousBoard[64], int colour);
+
+void doRandomMove (struct piece board[64], struct piece previousBoard[64], int occupiedSquares[16], int colour);
 
 // move.c
 int isMoveValid (struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int colour);

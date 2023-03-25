@@ -422,6 +422,9 @@ int isKingMoveValid (struct pieceMove move, struct piece board[64], struct piece
 
   int distance = destinationPosition-currentPosition;
 
+  int rowDifference = abs((destinationPosition / 8) - (currentPosition / 8));
+  int columnDifference = abs((destinationPosition % 8) - (currentPosition % 8));
+
 // perform general checks to see if move is valid
   if (isAnyMoveValid(move, board, previousBoard, colour) == 0) {
     
@@ -447,6 +450,14 @@ int isKingMoveValid (struct pieceMove move, struct piece board[64], struct piece
     return 0;
 
   }
+
+// make sure king is not crossing over board borders
+  if (abs(rowDifference) > 1|| abs(columnDifference) > 1) {
+
+    return 0;
+
+  }
+
 
   return 1;
 
@@ -842,8 +853,8 @@ void returnRookMoves(struct pieceMove move, struct piece board[64], struct piece
 
     if (isRookMoveValid(tempMove, board, previousBoard, colour) == 1) {
 
-        rookMoves[numOfMoves] = i;
-        numOfMoves++;
+      rookMoves[numOfMoves] = i;
+      numOfMoves++;
 
     }
 
@@ -956,14 +967,18 @@ void returnKingMoves(struct pieceMove move, struct piece board[64], struct piece
 
   for (int i = 0; i < 64; i++) {
 
+    printf("checking i = %d\n", i);
+
     squareToMove(i, coordinate);
 
     strcpy(tempMove.destination, coordinate);
 
     if (isKingMoveValid(tempMove, board, previousBoard, colour) == 1) {
 
-        kingMoves[numOfMoves] = i;
-        numOfMoves++;
+      printf("i = %d passed\n", i);
+
+      kingMoves[numOfMoves] = i;
+      numOfMoves++;
 
     }
 
