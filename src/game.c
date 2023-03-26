@@ -30,7 +30,7 @@ void returnBlackOccupiedSquares (struct piece board[64], int blackOccupiedSquare
     if (board[i].type < 0) {
 
       blackOccupiedSquares[count] = i;
-      count++; 
+      count++;  
 
     }
 
@@ -79,28 +79,28 @@ void returnWhitePossibleCaptures (struct piece board[64], struct piece previousB
     switch (currentType) {
 
       case 1:
-      returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 1);
-      break;
+        returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        break;
 
       case 2:
-      returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 1);
-      break;
+        returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        break;
 
       case 3:
-      returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 1);
-      break;
+        returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        break;
 
       case 4:
-      returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 1);
-      break;
+        returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        break;
 
       case 5:
-      returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 1);
-      break;
+        returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        break;
 
       case 6:
-      returnKingMoves(move, board, previousBoard, piecePossibleCaptures, 1);
-      break;
+        returnKingMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        break;
 
     }
 
@@ -163,28 +163,28 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
     switch (currentType) {
 
       case -1:
-      returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 2);
-      break;
+        returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        break;
 
       case -2:
-      returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 2);
-      break;
+        returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        break;
 
       case -3:
-      returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 2);
-      break;
+        returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        break;
 
       case -4:
-      returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 2);
-      break;
+        returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        break;
 
       case -5:
-      returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 2);
-      break;
+        returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        break;
 
       case -6:
-      returnKingMoves(move, board, previousBoard, piecePossibleCaptures, 2);
-      break;
+        returnKingMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        break;
 
     }
 

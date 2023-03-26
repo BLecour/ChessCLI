@@ -69,6 +69,8 @@ int canPawnEnPassant (struct pieceMove move, struct piece board[64], struct piec
 
 void doMove (struct pieceMove move, struct piece piece, struct piece board[64], struct piece previousBoard[64], int colour);
 
+void undoMove (struct pieceMove move, struct piece piece, struct piece board[64], struct piece previousBoard[64], int colour);
+
 void returnPawnMoves(struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int pawnMoves[64], int colour);
 
 void returnPawnCaptures(struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int pawnCaptures[64], int colour);

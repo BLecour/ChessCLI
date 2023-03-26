@@ -32,6 +32,13 @@ int main (int argc, char * argv[]) {
 
   fenDecode(board, previousBoard, FEN, &turn);
 
+// copy board to previousBoard
+  for (int i = 0; i < 64; i++) {
+
+    previousBoard[i] = board[i];
+
+  }
+
 /*
   piece board [64] = {
 //   a   b   c   d   e   f   g   h
