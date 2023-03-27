@@ -45,7 +45,9 @@ void returnWhitePossibleCaptures (struct piece board[64], struct piece previousB
 
   int piecePossibleCaptures[32];
   int whiteOccupiedSquares[16];
-  int pieceCount = 0, currentType;
+  int pieceCount = 0, moveCount = 0, currentType, currentOffset, rowDifference, columnDifference;
+
+  int kingOffsets[8] = {-9, -8, -7, -1, 1, 7, 8, 9};
 
   returnWhiteOccupiedSquares(board, whiteOccupiedSquares);
 
@@ -99,7 +101,23 @@ void returnWhitePossibleCaptures (struct piece board[64], struct piece previousB
         break;
 
       case 6:
-        returnKingMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        for (int j = 0; j < 8; j++) {
+          currentOffset = whiteOccupiedSquares[i] + kingOffsets[j];
+
+          int rowDifference = abs((currentOffset / 8) - (whiteOccupiedSquares[i] / 8));
+          int columnDifference = abs((currentOffset % 8) - (whiteOccupiedSquares[i] % 8));
+
+          currentOffset = whiteOccupiedSquares[i] + kingOffsets[j];
+
+// check that move doesn't cross over the side of the board
+          if (!(abs(rowDifference) > 1 || abs(columnDifference) > 1)) {
+
+            piecePossibleCaptures[moveCount] = currentOffset;
+            moveCount++;
+
+          }
+
+        }
         break;
 
     }
@@ -129,7 +147,9 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
 
   int piecePossibleCaptures[32];
   int blackOccupiedSquares[16];
-  int pieceCount = 0, currentType;
+  int pieceCount = 0, moveCount = 0, currentType, currentOffset, rowDifference, columnDifference;
+
+  int kingOffsets[8] = {-9, -8, -7, -1, 1, 7, 8, 9};
 
   returnBlackOccupiedSquares(board, blackOccupiedSquares);
 
@@ -183,7 +203,24 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
         break;
 
       case -6:
-        returnKingMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        for (int j = 0; j < 8; j++) {
+          currentOffset = blackOccupiedSquares[i] + kingOffsets[j];
+
+          int rowDifference = abs((currentOffset / 8) - (blackOccupiedSquares[i] / 8));
+          int columnDifference = abs((currentOffset % 8) - (blackOccupiedSquares[i] % 8));
+
+          currentOffset = blackOccupiedSquares[i] + kingOffsets[j];
+
+// check that move doesn't cross over the side of the board
+          if (!(abs(rowDifference) > 1 || abs(columnDifference) > 1)) {
+
+            piecePossibleCaptures[moveCount] = currentOffset;
+            moveCount++;
+
+          }
+
+        }
+        break;
         break;
 
     }
@@ -376,8 +413,6 @@ void doRandomMove (struct piece board[64], struct piece previousBoard[64], int e
   }
 
   chosenMove = rand() % moveCount;
-
-  printf("randomly chosen move = %d\n", pieceMoves[chosenMove]);
 
   squareToMove(pieceMoves[chosenMove], move.destination);
 

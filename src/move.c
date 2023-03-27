@@ -53,7 +53,6 @@ int isAnyMoveValid (struct pieceMove move, struct piece board[64], struct piece 
 // if player is trying to move other player's pieces
   if ((board[currentPosition].type > 0 && colour == 2) || (board[currentPosition].type < 0 && colour == 1)) {
 
-    printf("knight trying to move other players pieces\n");
     return 0;
 
   }
@@ -61,7 +60,6 @@ int isAnyMoveValid (struct pieceMove move, struct piece board[64], struct piece 
 // if move is out of bounds
   if (currentPosition < 0 || destinationPosition < 0) {
 
-    printf("knight trying to move out of bounds\n");
     return 0;
 
   }
@@ -69,7 +67,6 @@ int isAnyMoveValid (struct pieceMove move, struct piece board[64], struct piece 
 // can't move to its current spot
   if (strcmp(move.current, move.destination) == 0) {
 
-    printf("knight trying to move to own spot\n");
     return 0;
 
   }
@@ -77,7 +74,6 @@ int isAnyMoveValid (struct pieceMove move, struct piece board[64], struct piece 
 // can't capture own colour's pieces
   if ((board[destinationPosition].type > 0 && colour == 1) || (board[destinationPosition].type < 0 && colour == 2)) {
 
-    printf("knight trying to capture own colours pieces\n");
     return 0;
 
   }
@@ -275,8 +271,6 @@ int isKnightMoveValid (struct pieceMove move, struct piece board[64], struct pie
   int currentPosition, destinationPosition;
   moveToSquare(move, &currentPosition, &destinationPosition);
 
-  printf("currentPosition of knight = %d and destinationPosition of knight = %d\n", currentPosition, destinationPosition);
-
   int distance = destinationPosition-currentPosition;
 
   int rowDifference = abs((destinationPosition / 8) - (currentPosition / 8));
@@ -285,7 +279,6 @@ int isKnightMoveValid (struct pieceMove move, struct piece board[64], struct pie
 // perform general checks to see if move is valid
   if (isAnyMoveValid(move, board, previousBoard, colour) == 0) {
     
-    printf("knight fails at anymovevalid\n");
     return 0;
 
   }
@@ -293,19 +286,16 @@ int isKnightMoveValid (struct pieceMove move, struct piece board[64], struct pie
 // check that knight move is an L shape
   if (abs(distance) != 6 && abs(distance) != 10 && abs(distance) != 15 && abs(distance) != 17) {
 
-    printf("knight is not an L shape\n");
     return 0;
 
   }
 
   if ((rowDifference == 1 && columnDifference == 2) || (rowDifference == 2 && columnDifference == 1)) {
 
-    printf("knight move VALID\n");
     return 1;
 
   }
   
-  printf("knight fails at end of func\n");
   return 0;
 
 }
@@ -474,19 +464,21 @@ int isKingMoveValid (struct pieceMove move, struct piece board[64], struct piece
 
   if (colour == 1) {
 
-    printf("calls black\n");
     returnBlackPossibleCaptures(board, previousBoard, captureSquares, 1);
 
   } else {
 
-    printf("calls white\n");
     returnWhitePossibleCaptures(board, previousBoard, captureSquares, 2);
 
   }
 
   for (int i = 0; i < 64; i++) {
 
-    printf("captureSpaces[%d] = %d\n", i, captureSquares[i]);
+    if (captureSquares[i] == destinationPosition) {
+
+      return 0;
+
+    }
 
   }
 
@@ -566,7 +558,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
 // check that king hasn't moved
   if (board[currentPosition].moves != 0) {
 
-    printf("can't castle, king has already moved\n");
     return 0;
 
   }
@@ -1023,8 +1014,6 @@ void returnKingMoves(struct pieceMove move, struct piece board[64], struct piece
 
     if (isKingMoveValid(tempMove, board, previousBoard, colour) == 1) {
 
-      printf("i = %d passed\n", i);
-
       kingMoves[numOfMoves] = i;
       numOfMoves++;
 
@@ -1036,7 +1025,7 @@ void returnKingMoves(struct pieceMove move, struct piece board[64], struct piece
 
 void moveToSquare (struct pieceMove move, int * currentPosition, int * destinationPosition) {
 
-    switch (move.current[1]) {
+  switch (move.current[1]) {
 
     case '1':
       * currentPosition = 56;
@@ -1075,7 +1064,7 @@ void moveToSquare (struct pieceMove move, int * currentPosition, int * destinati
 
   }
 
-      switch (move.current[0]) {
+  switch (move.current[0]) {
 
     case 'a':
       * currentPosition += 0;
@@ -1113,9 +1102,8 @@ void moveToSquare (struct pieceMove move, int * currentPosition, int * destinati
       * currentPosition = -1;
 
   }
-
-
-    switch (move.destination[1]) {
+    
+  switch (move.destination[1]) {
 
     case '1':
       * destinationPosition = 56;
@@ -1154,7 +1142,7 @@ void moveToSquare (struct pieceMove move, int * currentPosition, int * destinati
 
   }
 
-      switch (move.destination[0]) {
+  switch (move.destination[0]) {
 
     case 'a':
       * destinationPosition += 0;
