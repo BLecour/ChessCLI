@@ -57,6 +57,11 @@ int main (int argc, char * argv[]) {
   typedef struct pieceMove pieceMove;
   pieceMove move;
 
+  int depth = 1;
+  int numOfMoves = depthTest(board, previousBoard, 1, exception, depth);
+
+  printf("depth at %d = %d\n", depth, numOfMoves);
+
   printf("Do you want to play as white (1) or black (2)? ");
   scanf("%d", &colour);
 

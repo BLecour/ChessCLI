@@ -40,9 +40,13 @@ void returnWhitePossibleCaptures (struct piece board[64], struct piece previousB
 
 void returnBlackPossibleCaptures (struct piece board[64], struct piece previousBoard[64], int blackPossibleCaptures[64], int colour, int exception);
 
+void returnAllPossibleMoves (struct piece board[64], struct piece previousBoard[64], struct pieceMove moves[128], int colour, int exception);
+
 int isItCheckmate (struct piece board[64], struct piece previousBoard[64], int colour, int exception);
 
 void doRandomMove (struct piece board[64], struct piece previousBoard[64], int occupiedSquares[16], int colour, int exception);
+
+int depthTest (struct piece board[64], struct piece previousBoard[64], int colour, int exception, int depth);
 
 // move.c
 int isMoveValid (struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int colour, int exception);

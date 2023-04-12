@@ -5,16 +5,12 @@ int isMoveValid (struct pieceMove move, struct piece board[64], struct piece pre
   int currentPosition, destinationPosition;
   moveToSquare(move, &currentPosition, &destinationPosition);
 
-  printf("checking %d to %d with exception = %d\n", currentPosition, destinationPosition, exception);
-
 // perform general checks to see if move is valid
   if (isAnyMoveValid(move, board, previousBoard, colour, exception) == 0) {
     
-    printf("failed anymovevalid\n");
     return 0;
 
   }
-  printf("passed anymovevalid\n");
 
   int currentType = board[currentPosition].type;
 
@@ -57,16 +53,12 @@ int isAnyMoveValid (struct pieceMove move, struct piece board[64], struct piece 
 // if player is trying to move other player's pieces
   if ((board[currentPosition].type > 0 && colour == 2) || (board[currentPosition].type < 0 && colour == 1)) {
 
-    printf("failed at 1\n");
-
     return 0;
 
   }
 
 // if move is out of bounds
   if (currentPosition < 0 || destinationPosition < 0) {
-
-    printf("failed at 2\n");
 
     return 0;
 
@@ -75,16 +67,12 @@ int isAnyMoveValid (struct pieceMove move, struct piece board[64], struct piece 
 // can't move to its current spot
   if (strcmp(move.current, move.destination) == 0) {
 
-    printf("failed at 3\n");
-
     return 0;
 
   }
 
 // can't capture own colour's pieces
   if (((board[destinationPosition].type > 0 && board[currentPosition].type > 0) || (board[destinationPosition].type < 0 && board[currentPosition].type < 0)) && !exception) {
-
-    printf("failed at 4, %d can't capture %d and EXCEPTION = %d\n", currentPosition, destinationPosition, exception);
 
     return 0;
 
@@ -474,7 +462,6 @@ int isKingMoveValid (struct pieceMove move, struct piece board[64], struct piece
 // check if piece it wants to attack is protected
   if (isPieceProtected(move, board, previousBoard, colour)) {
 
-    printf("piece is protected at %d\n", destinationPosition);
     return 0;
 
   }
@@ -757,11 +744,7 @@ int isPieceProtected (struct pieceMove move, struct piece board[64], struct piec
 
       squareToMove(pieces[i], tempMove.current);
 
-      printf("checking move from %s to %s\n", tempMove.current, tempMove.destination);
-
       if (isMoveValid(tempMove, board, previousBoard, 2, 1) == 1) {
-
-        printf("^^ is valid\n");
 
         return 1;
 
@@ -783,11 +766,7 @@ int isPieceProtected (struct pieceMove move, struct piece board[64], struct piec
 
       squareToMove(pieces[i], tempMove.current);
 
-      printf("checking move from %s to %s\n", tempMove.current, tempMove.destination);
-
       if (isMoveValid(tempMove, board, previousBoard, 1, 1) == 1) {
-
-        printf("^^ is valid\n");
 
         return 1;
 
@@ -796,8 +775,6 @@ int isPieceProtected (struct pieceMove move, struct piece board[64], struct piec
     }
 
   }
-
-  printf("piece at %d is not protected\n", destinationPosition);
 
   return 0;
 

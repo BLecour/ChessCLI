@@ -118,6 +118,7 @@ void returnWhitePossibleCaptures (struct piece board[64], struct piece previousB
           }
 
         }
+
         break;
 
     }
@@ -238,6 +239,144 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
         break;
 
       }
+
+    }
+
+  }
+
+}
+
+void returnAllPossibleMoves (struct piece board[64], struct piece previousBoard[64], struct pieceMove moves[128], int colour, int exception) {
+
+  typedef struct pieceMove pieceMove;
+  pieceMove tempMove;
+
+  int whiteSquares[16];
+  int blackSquares[16];
+  int possibleCaptures[64];
+  int currentSquare = 0, currentCapture = 0, moveCount = 0;
+
+  resetArray(whiteSquares, 16);
+  resetArray(blackSquares, 16);
+
+  returnWhiteOccupiedSquares(board, whiteSquares);
+  returnBlackOccupiedSquares(board, blackSquares);
+
+  for (int i = 0; i < 16; i++) {
+
+    resetArray(possibleCaptures, 64);
+
+    currentSquare = whiteSquares[i];
+
+    if (currentSquare == -1) {
+
+      break;
+
+    }
+
+    squareToMove(currentSquare, tempMove.current);
+
+    switch (board[currentSquare].type) {
+
+      case 1:
+        returnPawnMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
+        break;
+
+      case 2:
+        returnRookMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
+        break;
+
+      case 3:
+        returnKnightMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
+        break;
+
+      case 4:
+        returnBishopMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
+        break;
+
+      case 5:
+        returnQueenMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
+        break;
+
+      case 6:
+        returnKingMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
+        break;
+
+    }
+
+    for (int j = 0; j < 64; j++) {
+
+      currentCapture = possibleCaptures[j];
+
+      if (currentCapture == -1) {
+
+        break;
+
+      }
+
+      squareToMove(currentCapture, tempMove.destination);
+      moves[moveCount] = tempMove;
+      moveCount++;
+
+    }
+
+  }
+
+  for (int i = 0; i < 16; i++) {
+
+    resetArray(possibleCaptures, 64);
+
+    currentSquare = blackSquares[i];
+
+    if (currentSquare == -1) {
+
+      break;
+
+    }
+
+    squareToMove(currentSquare, tempMove.current);
+
+    switch (board[currentSquare].type) {
+
+      case 1:
+        returnPawnMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        break;
+
+      case 2:
+        returnRookMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        break;
+
+      case 3:
+        returnKnightMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        break;
+
+      case 4:
+        returnBishopMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        break;
+
+      case 5:
+        returnQueenMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        break;
+
+      case 6:
+        returnKingMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        break;
+
+    }
+
+    for (int j = 0; j < 64; j++) {
+
+      currentCapture = possibleCaptures[j];
+
+      if (currentCapture == -1) {
+
+        break;
+
+      }
+
+      squareToMove(currentCapture, tempMove.destination);
+      moves[moveCount] = tempMove;
+      moveCount++;
 
     }
 
@@ -419,5 +558,41 @@ void doRandomMove (struct piece board[64], struct piece previousBoard[64], int e
   squareToMove(pieceMoves[chosenMove], move.destination);
 
   doMove(move, board[chosenPiece], board, previousBoard, colour, exception);
+
+}
+
+int depthTest (struct piece board[64], struct piece previousBoard[64], int colour, int exception, int depth) {
+
+  if (depth == 0) {
+
+    return 1;
+
+  }
+
+  int numPositions = 0, currentPosition, destinationPosition;
+
+  typedef struct pieceMove pieceMove;
+  pieceMove moves [128] = {0};
+
+  returnAllPossibleMoves(board, previousBoard, moves, colour, exception);
+
+  for (int i = 0; i < 128; i++) {
+
+    if (moves[i].current[0] == '\0') {
+
+      break;
+
+    }
+
+    moveToSquare(moves[i], &currentPosition, &destinationPosition);
+
+    doMove(moves[i], board[currentPosition], board, previousBoard, colour, exception);
+    numPositions += depthTest(board, previousBoard, colour, exception, depth-1);
+    undoMove(moves[i], board[destinationPosition], board, previousBoard, colour);
+    //printf("moves[%d].current = %s  and moves[%d].destination = %s\n", i, moves[i].current, i, moves[i].destination);
+
+  }
+
+  return numPositions;
 
 }
