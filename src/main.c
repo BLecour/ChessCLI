@@ -57,7 +57,7 @@ int main (int argc, char * argv[]) {
   typedef struct pieceMove pieceMove;
   pieceMove move;
 
-  int depth = 1;
+  int depth = 3;
   int numOfMoves = depthTest(board, previousBoard, 1, exception, depth);
 
   printf("depth at %d = %d\n", depth, numOfMoves);
@@ -70,10 +70,10 @@ int main (int argc, char * argv[]) {
     if (colour == 1) {
 
       //printf("PREVIOUS BOARD:\n");
-      //printBoard(previousBoard);
+      printBoard(previousBoard);
 
       //printf("\nCURRENT BOARD:\n");
-      printBoard(board);
+      //printBoard(board);
 
     } else {
 

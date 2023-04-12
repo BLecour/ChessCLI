@@ -857,17 +857,47 @@ void undoMove (struct pieceMove move, struct piece movedPiece, struct piece boar
   int currentPosition, destinationPosition;
   moveToSquare(move, &currentPosition, &destinationPosition);
 
+  struct piece previousPiece = previousBoard[destinationPosition];
+  int capture = 0;
+
+// add en passant or something
+  if (previousBoard[destinationPosition].type != 0) {
+
+    capture = 1;
+    printf("it is a capture because previousBoard[%d].type = %d\n", destinationPosition, previousBoard[destinationPosition].type);
+
+
+  }
+
+  printf("undoing move from %d to %d\n", currentPosition, destinationPosition);
+
 // copy previousBoard to board
   for (int i = 0; i < 64; i++) {
 
     board[i] = previousBoard[i];
 
+    printf("copying i=%d previousBoard[%d] (type = %d) to board[%d] (type = %d)\n", i, i, previousBoard[i].type, i, board[i].type);
+
   }
 
-  movedPiece.moves--;
+  printf("***********BOARD AFTER SWAP WITHOUT ANY CHANGES**********\n");
+  printBoard(board);
+  printf("*********************************************************\n");
 
-  board[destinationPosition].type = 0;
+  movedPiece.moves--;
+  previousPiece.moves--;
+
   board[currentPosition] = movedPiece;
+
+  if (capture) {
+
+    board[destinationPosition] = previousPiece;
+    
+  } else {
+
+    board[destinationPosition].type = 0;
+
+  }
 
 }
 

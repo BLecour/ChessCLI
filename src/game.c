@@ -246,79 +246,35 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
 
 }
 
+void returnWhitePossibleMoves (struct piece board[64], struct piece previousBoard[64], struct pieceMove moves[128], int colour, int exception) {
+
+
+
+}
+
+void returnBlackPossibleMoves (struct piece board[64], struct piece previousBoard[64], struct pieceMove moves[128], int colour, int exception) {
+
+
+
+}
+
 void returnAllPossibleMoves (struct piece board[64], struct piece previousBoard[64], struct pieceMove moves[128], int colour, int exception) {
 
   typedef struct pieceMove pieceMove;
   pieceMove tempMove;
 
-  int whiteSquares[16];
-  int blackSquares[16];
   int possibleCaptures[64];
+  int occupiedSquares[16];
+  resetArray(occupiedSquares, 16);
   int currentSquare = 0, currentCapture = 0, moveCount = 0;
 
-  resetArray(whiteSquares, 16);
-  resetArray(blackSquares, 16);
+  if (colour == 1) {
 
-  returnWhiteOccupiedSquares(board, whiteSquares);
-  returnBlackOccupiedSquares(board, blackSquares);
+    returnWhiteOccupiedSquares(board, occupiedSquares);
 
-  for (int i = 0; i < 16; i++) {
+  } else {
 
-    resetArray(possibleCaptures, 64);
-
-    currentSquare = whiteSquares[i];
-
-    if (currentSquare == -1) {
-
-      break;
-
-    }
-
-    squareToMove(currentSquare, tempMove.current);
-
-    switch (board[currentSquare].type) {
-
-      case 1:
-        returnPawnMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
-        break;
-
-      case 2:
-        returnRookMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
-        break;
-
-      case 3:
-        returnKnightMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
-        break;
-
-      case 4:
-        returnBishopMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
-        break;
-
-      case 5:
-        returnQueenMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
-        break;
-
-      case 6:
-        returnKingMoves(tempMove, board, previousBoard, possibleCaptures, 1, exception);
-        break;
-
-    }
-
-    for (int j = 0; j < 64; j++) {
-
-      currentCapture = possibleCaptures[j];
-
-      if (currentCapture == -1) {
-
-        break;
-
-      }
-
-      squareToMove(currentCapture, tempMove.destination);
-      moves[moveCount] = tempMove;
-      moveCount++;
-
-    }
+    returnBlackOccupiedSquares(board, occupiedSquares);
 
   }
 
@@ -326,7 +282,7 @@ void returnAllPossibleMoves (struct piece board[64], struct piece previousBoard[
 
     resetArray(possibleCaptures, 64);
 
-    currentSquare = blackSquares[i];
+    currentSquare = occupiedSquares[i];
 
     if (currentSquare == -1) {
 
@@ -336,30 +292,30 @@ void returnAllPossibleMoves (struct piece board[64], struct piece previousBoard[
 
     squareToMove(currentSquare, tempMove.current);
 
-    switch (board[currentSquare].type) {
+    switch (abs(board[currentSquare].type)) {
 
       case 1:
-        returnPawnMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        returnPawnMoves(tempMove, board, previousBoard, possibleCaptures, colour, exception);
         break;
 
       case 2:
-        returnRookMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        returnRookMoves(tempMove, board, previousBoard, possibleCaptures, colour, exception);
         break;
 
       case 3:
-        returnKnightMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        returnKnightMoves(tempMove, board, previousBoard, possibleCaptures, colour, exception);
         break;
 
       case 4:
-        returnBishopMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        returnBishopMoves(tempMove, board, previousBoard, possibleCaptures, colour, exception);
         break;
 
       case 5:
-        returnQueenMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        returnQueenMoves(tempMove, board, previousBoard, possibleCaptures, colour, exception);
         break;
 
       case 6:
-        returnKingMoves(tempMove, board, previousBoard, possibleCaptures, 2, exception);
+        returnKingMoves(tempMove, board, previousBoard, possibleCaptures, colour, exception);
         break;
 
     }
@@ -563,6 +519,8 @@ void doRandomMove (struct piece board[64], struct piece previousBoard[64], int e
 
 int depthTest (struct piece board[64], struct piece previousBoard[64], int colour, int exception, int depth) {
 
+  printf("depthTest called with colour = %d\n", colour);
+
   if (depth == 0) {
 
     return 1;
@@ -576,6 +534,14 @@ int depthTest (struct piece board[64], struct piece previousBoard[64], int colou
 
   returnAllPossibleMoves(board, previousBoard, moves, colour, exception);
 
+  printf("All possible moves for colour = %d:\n");
+
+  for (int i = 0; i < 128; i++) {
+
+    printf("moves[%d] =  %s to %s\n", i, moves[i].current, moves[i].destination);
+
+  }
+
   for (int i = 0; i < 128; i++) {
 
     if (moves[i].current[0] == '\0') {
@@ -586,10 +552,31 @@ int depthTest (struct piece board[64], struct piece previousBoard[64], int colou
 
     moveToSquare(moves[i], &currentPosition, &destinationPosition);
 
+    printf("Before board:\n");
+    printBoard(board);
+    printf("Before previousBoard\n");
+    printBoard(previousBoard);
+
     doMove(moves[i], board[currentPosition], board, previousBoard, colour, exception);
-    numPositions += depthTest(board, previousBoard, colour, exception, depth-1);
+
+    printf("Middle board:\n");
+    printBoard(board);
+    printf("Middle previousBoard\n");
+    printBoard(previousBoard);
+
+    if (colour == 1) {
+      numPositions += depthTest(board, previousBoard, 2, exception, depth-1);
+    } else {
+      numPositions += depthTest(board, previousBoard, 1, exception, depth-1);
+    }
     undoMove(moves[i], board[destinationPosition], board, previousBoard, colour);
-    //printf("moves[%d].current = %s  and moves[%d].destination = %s\n", i, moves[i].current, i, moves[i].destination);
+
+    printf("After board:\n");
+    printBoard(board);
+    printf("After previousBoard\n");
+    printBoard(previousBoard);
+
+    printf("moves[%d].current = %s  and moves[%d].destination = %s\n", i, moves[i].current, i, moves[i].destination);
 
   }
 
