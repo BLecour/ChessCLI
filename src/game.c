@@ -38,7 +38,7 @@ void returnBlackOccupiedSquares (struct piece board[64], int blackOccupiedSquare
 
 }
 
-void returnWhitePossibleCaptures (struct piece board[64], struct piece previousBoard[64], int whitePossibleCaptures[64], int colour) {
+void returnWhitePossibleCaptures (struct piece board[64], struct piece previousBoard[64], int whitePossibleCaptures[64], int colour, int exception) {
 
   typedef struct pieceMove pieceMove;
   pieceMove move;
@@ -81,31 +81,31 @@ void returnWhitePossibleCaptures (struct piece board[64], struct piece previousB
     switch (currentType) {
 
       case 1:
-        returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 1, exception);
         break;
 
       case 2:
-        returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 1, exception);
         break;
 
       case 3:
-        returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 1, exception);
         break;
 
       case 4:
-        returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 1, exception);
         break;
 
       case 5:
-        returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 1);
+        returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 1, exception);
         break;
 
       case 6:
         for (int j = 0; j < 8; j++) {
           currentOffset = whiteOccupiedSquares[i] + kingOffsets[j];
 
-          int rowDifference = abs((currentOffset / 8) - (whiteOccupiedSquares[i] / 8));
-          int columnDifference = abs((currentOffset % 8) - (whiteOccupiedSquares[i] % 8));
+          rowDifference = abs((currentOffset / 8) - (whiteOccupiedSquares[i] / 8));
+          columnDifference = abs((currentOffset % 8) - (whiteOccupiedSquares[i] % 8));
 
           currentOffset = whiteOccupiedSquares[i] + kingOffsets[j];
 
@@ -140,7 +140,7 @@ void returnWhitePossibleCaptures (struct piece board[64], struct piece previousB
 
 }
 
-void returnBlackPossibleCaptures (struct piece board[64], struct piece previousBoard[64], int blackPossibleCaptures[64], int colour) {
+void returnBlackPossibleCaptures (struct piece board[64], struct piece previousBoard[64], int blackPossibleCaptures[64], int colour, int exception) {
 
   typedef struct pieceMove pieceMove;
   pieceMove move;
@@ -183,31 +183,33 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
     switch (currentType) {
 
       case -1:
-        returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        returnPawnMoves(move, board, previousBoard, piecePossibleCaptures, 2, exception);
         break;
 
       case -2:
-        returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        returnRookMoves(move, board, previousBoard, piecePossibleCaptures, 2, exception);
         break;
 
       case -3:
-        returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        returnKnightMoves(move, board, previousBoard, piecePossibleCaptures, 2, exception);
         break;
 
       case -4:
-        returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        returnBishopMoves(move, board, previousBoard, piecePossibleCaptures, 2, exception);
         break;
 
       case -5:
-        returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 2);
+        returnQueenMoves(move, board, previousBoard, piecePossibleCaptures, 2, exception);
         break;
 
       case -6:
+
         for (int j = 0; j < 8; j++) {
+          
           currentOffset = blackOccupiedSquares[i] + kingOffsets[j];
 
-          int rowDifference = abs((currentOffset / 8) - (blackOccupiedSquares[i] / 8));
-          int columnDifference = abs((currentOffset % 8) - (blackOccupiedSquares[i] % 8));
+          rowDifference = abs((currentOffset / 8) - (blackOccupiedSquares[i] / 8));
+          columnDifference = abs((currentOffset % 8) - (blackOccupiedSquares[i] % 8));
 
           currentOffset = blackOccupiedSquares[i] + kingOffsets[j];
 
@@ -220,7 +222,7 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
           }
 
         }
-        break;
+
         break;
 
     }
@@ -243,7 +245,7 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
 
 }
 
-int isItCheckmate (struct piece board[64], struct piece previousBoard[64], int colour) {
+int isItCheckmate (struct piece board[64], struct piece previousBoard[64], int colour, int exception) {
 
   typedef struct pieceMove pieceMove;
   pieceMove move;
@@ -276,15 +278,15 @@ int isItCheckmate (struct piece board[64], struct piece previousBoard[64], int c
 
   squareToMove(kingPosition, move.current);
 
-  returnKingMoves(move, board, previousBoard, kingMoves, colour);
+  returnKingMoves(move, board, previousBoard, kingMoves, colour, exception);
 
   if (colour == 1) {
 
-    returnBlackPossibleCaptures(board, previousBoard, possibleCaptures, colour);
+    returnBlackPossibleCaptures(board, previousBoard, possibleCaptures, colour, exception);
 
   } else {
 
-    returnWhitePossibleCaptures(board, previousBoard, possibleCaptures, colour);
+    returnWhitePossibleCaptures(board, previousBoard, possibleCaptures, colour, exception);
 
   }
 
@@ -335,7 +337,7 @@ int isItCheckmate (struct piece board[64], struct piece previousBoard[64], int c
 
 }
 
-void doRandomMove (struct piece board[64], struct piece previousBoard[64], int enemyOccupiedSquares[16], int colour) {
+void doRandomMove (struct piece board[64], struct piece previousBoard[64], int enemyOccupiedSquares[16], int colour, int exception) {
 
   typedef struct pieceMove pieceMove;
   pieceMove move;
@@ -370,28 +372,28 @@ void doRandomMove (struct piece board[64], struct piece previousBoard[64], int e
     switch (abs(board[chosenPiece].type)) {
 
       case 1:
-      returnPawnMoves(move, board, previousBoard, pieceMoves, colour);
-      break;
+        returnPawnMoves(move, board, previousBoard, pieceMoves, colour, exception);
+        break;
 
       case 2:
-      returnRookMoves(move, board, previousBoard, pieceMoves, colour);
-      break;
+        returnRookMoves(move, board, previousBoard, pieceMoves, colour, exception);
+        break;
 
       case 3:
-      returnKnightMoves(move, board, previousBoard, pieceMoves, colour);
-      break;
+        returnKnightMoves(move, board, previousBoard, pieceMoves, colour, exception);
+        break;
 
       case 4:
-      returnBishopMoves(move, board, previousBoard, pieceMoves, colour);
-      break;
+        returnBishopMoves(move, board, previousBoard, pieceMoves, colour, exception);
+        break;
 
       case 5:
-      returnQueenMoves(move, board, previousBoard, pieceMoves, colour);
-      break;
+        returnQueenMoves(move, board, previousBoard, pieceMoves, colour, exception);
+        break;
 
       case 6:
-      returnKingMoves(move, board, previousBoard, pieceMoves, colour);
-      break;
+        returnKingMoves(move, board, previousBoard, pieceMoves, colour, exception);
+        break;
 
     }
 
@@ -416,6 +418,6 @@ void doRandomMove (struct piece board[64], struct piece previousBoard[64], int e
 
   squareToMove(pieceMoves[chosenMove], move.destination);
 
-  doMove(move, board[chosenPiece], board, previousBoard, colour);
+  doMove(move, board[chosenPiece], board, previousBoard, colour, exception);
 
 }

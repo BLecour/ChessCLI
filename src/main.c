@@ -9,7 +9,7 @@ int main (int argc, char * argv[]) {
   int mySquares[16];
   int enemySquares[16];
 
-  int colour, currentPosition, destinationPosition, turn;
+  int colour, currentPosition, destinationPosition, turn, exception = 0;
 
 // create a null piece to signify empty space
   piece blank = {};
@@ -93,19 +93,19 @@ int main (int argc, char * argv[]) {
         printf("Enter the coordinates of the white piece you want to move: ");
         scanf(" %s", move.current);
       
-        printPossibleMoves(move, board, previousBoard, turn);
+        printPossibleMoves(move, board, previousBoard, turn, exception);
 
         printf("Enter where you want to move the white piece (or enter 0 to restart): ");
         scanf(" %s", move.destination);
 
         if (move.destination[0] != '0') {
 
-          while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, previousBoard, turn) != 1)) {
+          while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, previousBoard, turn, 0) != 1)) {
 
             printf("Not a valid move. Enter the coordinates of the white piece you want to move: ");
             scanf(" %s", move.current);
 
-            printPossibleMoves(move, board, previousBoard, turn);
+            printPossibleMoves(move, board, previousBoard, turn, exception);
 
             printf("Enter where you want to move the white piece (or enter 0 to restart): ");
             scanf(" %s", move.destination);
@@ -120,19 +120,19 @@ int main (int argc, char * argv[]) {
         printf("Enter the coordinates of the black piece you want to move: ");
         scanf(" %s", move.current);
       
-        printPossibleMoves(move, board, previousBoard, turn);
+        printPossibleMoves(move, board, previousBoard, turn, exception);
 
         printf("Enter where you want to move the black piece (or enter 0 to restart): ");
         scanf(" %s", move.destination);
 
         if (move.destination[0] != '0') {
 
-          while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, previousBoard, turn) != 1)) {
+          while ((strlen(move.current) != 2) || (strlen(move.destination) != 2) || (isMoveValid(move, board, previousBoard, turn, 0) != 1)) {
 
             printf("Not a valid move. Enter the coordinates of the black piece you want to move: ");
             scanf(" %s", move.current);
 
-            printPossibleMoves(move, board, previousBoard, turn);
+            printPossibleMoves(move, board, previousBoard, turn, exception);
 
             printf("Enter where you want to move the black piece (or enter 0 to restart): ");
             scanf(" %s", move.destination);
@@ -145,13 +145,11 @@ int main (int argc, char * argv[]) {
 
     }
 
-    printf("fart1\n");
-
     moveToSquare(move, &currentPosition, &destinationPosition);
 
     piece currentPiece = board[currentPosition];
 
-    doMove(move, currentPiece, board, previousBoard, turn);
+    doMove(move, currentPiece, board, previousBoard, turn, exception);
 
 // enemy turn
 
