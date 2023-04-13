@@ -246,18 +246,6 @@ void returnBlackPossibleCaptures (struct piece board[64], struct piece previousB
 
 }
 
-void returnWhitePossibleMoves (struct piece board[64], struct piece previousBoard[64], struct pieceMove moves[128], int colour, int exception) {
-
-
-
-}
-
-void returnBlackPossibleMoves (struct piece board[64], struct piece previousBoard[64], struct pieceMove moves[128], int colour, int exception) {
-
-
-
-}
-
 void returnAllPossibleMoves (struct piece board[64], struct piece previousBoard[64], struct pieceMove moves[128], int colour, int exception) {
 
   typedef struct pieceMove pieceMove;
@@ -519,8 +507,6 @@ void doRandomMove (struct piece board[64], struct piece previousBoard[64], int e
 
 int depthTest (struct piece board[64], struct piece previousBoard[64], int colour, int exception, int depth) {
 
-  printf("depthTest called with colour = %d\n", colour);
-
   if (depth == 0) {
 
     return 1;
@@ -534,14 +520,6 @@ int depthTest (struct piece board[64], struct piece previousBoard[64], int colou
 
   returnAllPossibleMoves(board, previousBoard, moves, colour, exception);
 
-  printf("All possible moves for colour = %d:\n");
-
-  for (int i = 0; i < 128; i++) {
-
-    printf("moves[%d] =  %s to %s\n", i, moves[i].current, moves[i].destination);
-
-  }
-
   for (int i = 0; i < 128; i++) {
 
     if (moves[i].current[0] == '\0') {
@@ -552,31 +530,19 @@ int depthTest (struct piece board[64], struct piece previousBoard[64], int colou
 
     moveToSquare(moves[i], &currentPosition, &destinationPosition);
 
-    printf("Before board:\n");
-    printBoard(board);
-    printf("Before previousBoard\n");
-    printBoard(previousBoard);
-
     doMove(moves[i], board[currentPosition], board, previousBoard, colour, exception);
 
-    printf("Middle board:\n");
-    printBoard(board);
-    printf("Middle previousBoard\n");
-    printBoard(previousBoard);
-
     if (colour == 1) {
+
       numPositions += depthTest(board, previousBoard, 2, exception, depth-1);
+      
     } else {
+
       numPositions += depthTest(board, previousBoard, 1, exception, depth-1);
+
     }
+
     undoMove(moves[i], board[destinationPosition], board, previousBoard, colour);
-
-    printf("After board:\n");
-    printBoard(board);
-    printf("After previousBoard\n");
-    printBoard(previousBoard);
-
-    printf("moves[%d].current = %s  and moves[%d].destination = %s\n", i, moves[i].current, i, moves[i].destination);
 
   }
 

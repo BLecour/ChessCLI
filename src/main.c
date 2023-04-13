@@ -8,6 +8,9 @@ int main (int argc, char * argv[]) {
 
   int mySquares[16];
   int enemySquares[16];
+  int moves[128];
+
+  resetArray(moves, 128);
 
   int colour, currentPosition, destinationPosition, turn, exception = 0;
 
@@ -57,11 +60,6 @@ int main (int argc, char * argv[]) {
   typedef struct pieceMove pieceMove;
   pieceMove move;
 
-  int depth = 3;
-  int numOfMoves = depthTest(board, previousBoard, 1, exception, depth);
-
-  printf("depth at %d = %d\n", depth, numOfMoves);
-
   printf("Do you want to play as white (1) or black (2)? ");
   scanf("%d", &colour);
 
@@ -69,25 +67,14 @@ int main (int argc, char * argv[]) {
 
     if (colour == 1) {
 
-      //printf("PREVIOUS BOARD:\n");
-      printBoard(previousBoard);
-
-      //printf("\nCURRENT BOARD:\n");
-      //printBoard(board);
+      printBoard(board);
 
     } else {
 
       printBlackBoard(board);
 
     }
-/*
-    if (isItCheckmate(board, previousBoard, colour)) {
 
-      printf("CHECKMATE!!!!!!!!!!!!!!!\n");
-      exit(0);
-
-    }
-*/
     move.destination[0] = '0';
 
     while (move.destination[0] == '0') {

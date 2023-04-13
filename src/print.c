@@ -122,12 +122,10 @@ void fenDecode (struct piece board[64], struct piece previousBoard[64], char FEN
 // decode second part of FEN
   if (FEN[charCount] == 'w') {
 
-    printf("white's turn\n");
     *turn = 1;
 
   } else if (FEN[charCount] == 'b') {
 
-    printf("black's turn\n");
     *turn = 2;
 
   } else {
@@ -142,26 +140,22 @@ void fenDecode (struct piece board[64], struct piece previousBoard[64], char FEN
 // decode third part of FEN
   if (FEN[charCount] == '-') {
 
-    printf("nobody can castle\n");
     board[60].moves = 1;
     board[4].moves = 1;
     charCount += 2;
 
   } else if (isupper(FEN[charCount]) && FEN[charCount+2] == ' ') {
 
-    printf("white can castle\n");
     board[4].moves = 1;
     charCount += 3;
 
   } else if (islower(FEN[charCount]) && FEN[charCount+2] == ' ') {
 
-    printf("black can castle\n");
     board[60].moves = 1;
     charCount += 3;
 
   } else {
 
-    printf("both can castle\n");
     charCount += 5;
 
   }
@@ -169,7 +163,6 @@ void fenDecode (struct piece board[64], struct piece previousBoard[64], char FEN
 // decode fourth part of FEN
   if (FEN[charCount] == '-') {
 
-    printf("no en passant squares\n");
     charCount += 2;
 
   } else {

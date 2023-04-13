@@ -548,7 +548,7 @@ int isKingInCheck (struct piece board[64], struct piece previousBoard[64], int c
 
 int canKingCastle (struct pieceMove move, struct piece board[64], struct piece previousBoard[64], int colour, int exception) {
 
-  int currentPosition, destinationPosition;
+  int currentPosition = -1, destinationPosition = -1;
   moveToSquare(move, &currentPosition, &destinationPosition);
   
   int captures[64];
@@ -568,7 +568,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
     return 0;
 
   }
-
 
 // white kingside castle
   if (colour == 1 && currentPosition == 60 && destinationPosition == 62) {
@@ -595,7 +594,6 @@ int canKingCastle (struct pieceMove move, struct piece board[64], struct piece p
       return 0;
 
     }
-
 
 // white queenside castle
   } else if (colour == 1 && currentPosition == 60 && destinationPosition == 58) {
@@ -858,46 +856,21 @@ void undoMove (struct pieceMove move, struct piece movedPiece, struct piece boar
   moveToSquare(move, &currentPosition, &destinationPosition);
 
   struct piece previousPiece = previousBoard[destinationPosition];
-  int capture = 0;
-
-// add en passant or something
-  if (previousBoard[destinationPosition].type != 0) {
-
-    capture = 1;
-    printf("it is a capture because previousBoard[%d].type = %d\n", destinationPosition, previousBoard[destinationPosition].type);
-
-
-  }
-
-  printf("undoing move from %d to %d\n", currentPosition, destinationPosition);
 
 // copy previousBoard to board
   for (int i = 0; i < 64; i++) {
 
     board[i] = previousBoard[i];
 
-    printf("copying i=%d previousBoard[%d] (type = %d) to board[%d] (type = %d)\n", i, i, previousBoard[i].type, i, board[i].type);
-
   }
-
-  printf("***********BOARD AFTER SWAP WITHOUT ANY CHANGES**********\n");
-  printBoard(board);
-  printf("*********************************************************\n");
 
   movedPiece.moves--;
   previousPiece.moves--;
 
   board[currentPosition] = movedPiece;
+  board[destinationPosition].type = 0;
 
-  if (capture) {
 
-    board[destinationPosition] = previousPiece;
-    
-  } else {
-
-    board[destinationPosition].type = 0;
-
-  }
 
 }
 
@@ -1117,7 +1090,7 @@ void returnKingMoves(struct pieceMove move, struct piece board[64], struct piece
 
     }
 
-  } 
+  }
 
 }
 
